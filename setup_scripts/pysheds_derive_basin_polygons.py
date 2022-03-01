@@ -250,7 +250,10 @@ for resolution in resolutions:
         # load the region DEM once and iterate through all
         region_dem_path = os.path.join(processed_dem_dir, f'{region_code}_DEM_3005_{resolution}.tif')
 
-        grid = Grid.from_raster(region_dem_path)
+        print(region_dem_path)
+
+
+        grid = Grid.from_raster(region_dem_path, data_name='dem')
 
         dem = grid.read_raster(region_dem_path)
 
