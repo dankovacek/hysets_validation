@@ -13,7 +13,7 @@ for 128 GB RAM, 12 core processor.)
 
 **Install GDAL**
 
-> `sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable`
+> `sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable`  
 > `sudo apt-get update`
 
 Install software utilities:
@@ -60,7 +60,7 @@ a list of DEM files corresponding to the layers of interest.
 Make two source directories for DEM data and raw files. At the root
 directory level:
 
-> `cd hysets_validation/source_data`
+> `cd hysets_validation/source_data`  
 > `mkdir dem_data/ dem_data/dem_files`
 
 The custom file lists I generated for BC/AK/WA are provided in the
@@ -117,7 +117,8 @@ in `setup_scripts/`. (ensure the virtual environment created above is
 activated from the step above, you should see `(env) root@...` in your
 terminal).
 
-> `cd setup_scripts` `python process_hydrologic_regions.py`
+> `cd setup_scripts`  
+> `python process_hydrologic_regions.py`
 
 The script will download the NHN file containing geometries
 corresponding to hydrographic features in BC. The script then takes the
@@ -153,10 +154,11 @@ below](#markdown-header-nhn-additional-notes).
 
 Updated set of basin polygons from WSC, published in December 2021.
 
-> `mkdir source_data/WSC_data` `cd source_data/WSC_data`
-> `wget https://collaboration.cmc.ec.gc.ca/cmc/hydrometrics/www/HydrometricNetworkBasinPolygons/07.zip`
-> `wget https://collaboration.cmc.ec.gc.ca/cmc/hydrometrics/www/HydrometricNetworkBasinPolygons/08.zip`
-> `wget https://collaboration.cmc.ec.gc.ca/cmc/hydrometrics/www/HydrometricNetworkBasinPolygons/09.zip`
+> `mkdir source_data/WSC_data`  
+> `cd source_data/WSC_data`  
+> `wget https://collaboration.cmc.ec.gc.ca/cmc/hydrometrics/www/HydrometricNetworkBasinPolygons/07.zip`  
+> `wget https://collaboration.cmc.ec.gc.ca/cmc/hydrometrics/www/HydrometricNetworkBasinPolygons/08.zip`  
+> `wget https://collaboration.cmc.ec.gc.ca/cmc/hydrometrics/www/HydrometricNetworkBasinPolygons/09.zip`  
 > `wget https://collaboration.cmc.ec.gc.ca/cmc/hydrometrics/www/HydrometricNetworkBasinPolygons/10.zip`
 
 The file containing currently publicly available WSC station basin
@@ -164,7 +166,7 @@ polygons can be retrieved by the command below. The collection is less
 complete than the set available above, however the set above is not
 finalized/approved and is subject to revision.
 
-> `cd source_data/WSC_data/`
+> `cd source_data/WSC_data/`  
 > `wget -P source_data/  http://donnees.ec.gc.ca/data/water/products/national-hydrometric-network-basin-polygons/WSC_Basins.gdb.zip`
 
 The `source_data` folder contains the WSC station metadata file of
@@ -173,11 +175,12 @@ active and historic hydrometric stations `WSC_Stations_2020.csv`.
 Merge all files into one zip and create a geojson file – geopandas can
 read zip files of polygons:
 
-> `mkdir all` `for x in *.zip; do unzip -d all -o -u $x ; done`
-> `zip -r WSC_basins.zip all` `cd all/`
-> `for dir in */; do mkdir -- "$dir"{basin,pour_point,station}; done`
-> `for dir in */; do mv "$dir"/*DrainageBasin* "$dir"/basin`
-> `for dir in */; do mv "$dir"/*PourPoint* "$dir"/pour_point`
+> `mkdir all`  
+> `for x in *.zip; do unzip -d all -o -u $x ; done`  
+> `zip -r WSC_basins.zip all` `cd all/`  
+> `for dir in */; do mkdir -- "$dir"{basin,pour_point,station}; done`  
+> `for dir in */; do mv "$dir"/*DrainageBasin* "$dir"/basin`  
+> `for dir in */; do mv "$dir"/*PourPoint* "$dir"/pour_point`  
 > `for dir in */; do mv "$dir"/*Station* "$dir"/station`
 
 Create geojson objects as separate data structures of all basins:
@@ -203,7 +206,7 @@ From the project directory (`hysets_validation/`), create a directory to
 store the HYSETS study data (~ 14.6 GB. *Note: update the filename in
 the unzip command.*):
 
-> `mkdir source_data/HYSETS_data/`
+> `mkdir source_data/HYSETS_data/`  
 > `curl -O https://files.osf.io/v1/resources/rpc3w/providers/googledrive/?zip=HYSETS_2020.zip > source_data/HYSETS_data/HYSETS_2020_data.zip`  
 > `unzip HYSETS_2020_data.zip`
 
@@ -231,7 +234,7 @@ the North American Land Change Monitoring System:
 > `cd source_data/`  
 > `mkdir NALCMS_data/`  
 > `cd NALCMS_data/`  
-> `wget http://www.cec.org/wp-content/uploads/wpallimport/files/Atlas/Files/2010nalcms30m/north_america_2010.zip`
+> `wget http://www.cec.org/wp-content/uploads/wpallimport/files/Atlas/Files/2010nalcms30m/north_america_2010.zip`  
 > `unzip north_america_2020.zip -d .`
 
 Basin Delineation and Attribute Validation

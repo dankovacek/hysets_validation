@@ -26,7 +26,6 @@ validate_hysets/results/*.pickle
 
 setup_scripts/performance_tests/
 setup_scripts/superseded/
-images/
 
 validate_hysets/test_burn/
 validate_hysets/*.geojson
