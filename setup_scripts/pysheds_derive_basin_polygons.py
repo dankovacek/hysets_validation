@@ -259,9 +259,9 @@ for resolution in resolutions:
         print(foo.rio.crs)
         print(type(foo))
 
-        grid = Grid.from_raster(region_dem_path, data_name='dem')
+        grid = Grid.from_raster(foo)
 
-        dem = grid.read_raster(region_dem_path, data_name='dem')
+        dem = grid.read_raster(region_dem_path)
 
         conditioned_dem = pysheds_condition_dem(grid, dem)
 
