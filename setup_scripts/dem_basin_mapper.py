@@ -220,7 +220,7 @@ for file in all_masks:
 
         if not os.path.exists(out_path_reprojected):
 
-            command = f'gdalwarp -s_srs epsg:4326 -cutline {fpath} -cl {named_layer} -crop_to_cutline -tr {trw} {trh} -multi -of gtiff {dem_mosaic_file} {out_path} -wo NUM_THREADS=ALL_CPUS'
+            command = f'gdalwarp -a_srs epsg:4326 -cutline {fpath} -cl {named_layer} -crop_to_cutline -tr {trw} {trh} -multi -of gtiff {dem_mosaic_file} {out_path} -wo NUM_THREADS=ALL_CPUS'
             try:
                 os.system(command)
             except Exception as e:
