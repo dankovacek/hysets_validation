@@ -28,7 +28,7 @@ wbt.verbose = True
 wbt.set_working_dir(cwd)
 
 dem_dir = '../source_data/dem_data/processed_dem/'
-dem_dir = '/media/danbot/Samsung_T5/geospatial_data/DEM_data/processed_dem/'
+# dem_dir = '/media/danbot/Samsung_T5/geospatial_data/DEM_data/processed_dem/'
 
 if not os.path.exists(dem_dir):
     os.mkdir(dem_dir)

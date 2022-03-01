@@ -17,7 +17,7 @@ for 128 GB RAM, 12 core processor.)
 > `sudo apt-get update`
 
 Install software utilities:
-&gt;`sudo apt-get install libgdal-dev gdal-bin libproj15 libproj19 libproj-dev parallel unzip dos2unix`
+&gt;`sudo apt-get install libgdal-dev gdal-bin libproj15 libproj19 libproj-dev openmpi-bin libopenmpi-dev libboost-iostreams-dev parallel unzip dos2unix`
 
 **Clone the repository (from the root directory)**
 
@@ -38,7 +38,7 @@ Activate the virual environment:
 &gt;`source env/bin/activate`
 
 Install Python packages:  
-&gt;`pip install geopandas whitebox shapely rioxarray`
+&gt;`pip install geopandas whitebox shapely rioxarray richdem pysheds`
 
 Download Source Data
 --------------------
