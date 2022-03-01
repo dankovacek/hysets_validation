@@ -58,12 +58,12 @@ hysets_locs = [Point(x, y) for x, y in zip(hysets_df['Centroid_Lon_deg_E'].value
 hysets_df = gpd.GeoDataFrame(hysets_df, geometry=hysets_locs, crs='EPSG:4269')
 hysets_df = hysets_df.to_crs(3005)
 
-combined_df = wsc_df[['Official_ID', 'geometry']].append(hysets_df[['Official_ID', 'geometry']])
+combined_df = pd.concat([wsc_df[['Official_ID', 'geometry']], hysets_df[['Official_ID', 'geometry']]], join='outer', ignore_index=True)
 
 # drop duplicates, but keep the first station polygon
 combined_df.drop_duplicates(subset='Official_ID', keep='first', inplace=True, ignore_index=True)
 
-stn_loc_df = wsc_df[['Official_ID', 'geometry']].append(usgs_df[['Official_ID', 'geometry']], ignore_index=True)
+stn_loc_df = pd.concat([wsc_df[['Official_ID', 'geometry']], usgs_df[['Official_ID', 'geometry']]], join='outer', ignore_index=True)
 
 stn_loc_df = stn_loc_df[stn_loc_df['Official_ID'].isin(hysets_df['Official_ID'].values)]
 
