@@ -247,7 +247,6 @@ for resolution in resolutions:
         t_start = time.time()
 
         print(f'Starting analysis on region {region_code} {i}/{len(region_codes)}.')
-
         
         # load the region DEM once and iterate through all
         region_dem_path = os.path.join(processed_dem_dir, f'{region_code}_DEM_3005_{resolution}.tif')
@@ -256,10 +255,9 @@ for resolution in resolutions:
 
         # print(region_dem_path)
 
+        grid = Grid.from_raster(region_dem_path)
 
-        grid = Grid.from_raster(region_dem_path, data_name='dem')
-
-        dem = grid.read_raster(region_dem_path, data_name='dem')
+        dem = grid.read_raster(region_dem_path)
 
         conditioned_dem = pysheds_condition_dem(grid, dem)
 
