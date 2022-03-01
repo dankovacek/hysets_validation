@@ -183,8 +183,9 @@ for file in all_masks:
     grp_code = file.split('_')[0]
     print(f'Starting polygon merge on {grp_code}.')
 
-    region_polygon = gpd.read_file(fpath, driver='GeoJSON')
-    bounds = region_polygon.geometry.bounds
+    mask_polygon = gpd.read_file(fpath, driver='GeoJSON')
+    print(f'mask crs: {mask_polygon.crs}')
+    bounds = mask_polygon.geometry.bounds
 
     # eligible_mask_files = [e for e in os.listdir(mask_dir) if e.startswith(grp_code)]
 
@@ -192,7 +193,7 @@ for file in all_masks:
     # # required an extra step to remove the ocean
     # trimmed_file = [e for e in eligible_mask_files if e.endswith('trimmed.geojson')]
     
-    named_layer = f'{grp_code}_4326'
+    named_layer = file.split('.')[0]
     # if len(trimmed_file) == 1:
     #     named_layer = f'{grp_code}_4326_trimmed'
 
