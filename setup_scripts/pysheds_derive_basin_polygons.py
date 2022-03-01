@@ -252,15 +252,9 @@ for resolution in resolutions:
         region_dem_path = os.path.join(processed_dem_dir, f'{region_code}_DEM_3005_{resolution}.tif')
         # foo = '/media/danbot/Samsung_T5/geospatial_data/DEM_data/processed_dem'
         # region_dem_path = os.path.join(foo, f'{region_code}_DEM_3005_{resolution}.tif')
+        assert os.path.exists(region_dem_path)
 
-        print(region_dem_path)
-
-        foo = rxr.open_rasterio(region_dem_path)
-        print(foo.rio.crs)
-        print(type(foo))
-
-        grid = Grid.from_raster(foo, data_name='dem')
-
+        grid = Grid.from_raster(region_dem_path)
         dem = grid.read_raster(region_dem_path)
 
         conditioned_dem = pysheds_condition_dem(grid, dem)
