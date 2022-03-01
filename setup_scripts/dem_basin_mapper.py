@@ -54,7 +54,11 @@ if not os.path.exists(save_path):
 def get_crs_and_resolution(fname):
     raster = rxr.open_rasterio(fname)
     crs = raster.rio.crs.to_epsg()
-    res = raster.rio.resolution()    
+    res = raster.rio.resolution()   
+    print('')
+    print(fname)
+    print(crs) 
+    print('')
     return crs, res
 
 
