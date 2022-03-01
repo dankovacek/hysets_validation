@@ -5,7 +5,9 @@ fwapg/
 basin_tile_mapping/
 
 processed_data/derived_basins/
-processed_data/merged_basin_groups/
+processed_data/merged_basin_groups/group_stream_vectors/
+processed_data/merged_basin_groups/split_groups/
+processed_data/merged_basin_groups/*.geojson
 processed_data/snapped_locations/
 processed_data/superseded/
 processed_data/*.geojson
