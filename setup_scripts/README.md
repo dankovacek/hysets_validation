@@ -52,9 +52,10 @@ need the results file and the basins geometry. The results file is
 included in the repo, and we can access the basin archive file directly
 from Google Drive:
 
-> `mkdir source_data/HYSETS_data/`  
-> `curl -O https://files.osf.io/v1/resources/rpc3w/providers/googledrive/?zip=HYSETS_watershed_boundaries.zip > source_data/HYSETS_data/HYSETS_watershed_boundaries.zip`  
-> `unzip HYSETS_watershed_boundaries.zip`
+> `mkdir source_data/HYSETS_data/` `cd source_data/HYSETS_data/`  
+> `curl -O https://files.osf.io/v1/resources/rpc3w/providers/googledrive/?zip=HYSETS_watershed_boundaries.zip > HYSETS_watershed_boundaries.zip`  
+> `mkdir USGS_basins/`  
+> `unzip HYSETS_watershed_boundaries.zip -d USGS_basins/`
 
 This file is particularly large, so open a second ssh connection and
 continue while this file is downloading.
@@ -68,8 +69,10 @@ and the US-based station locations can be [downloaded from the
 USGS](https://water.usgs.gov/GIS/metadata/usgswrd/XML/streamgages.xml)
 by the following command:
 
-> `curl -O https://water.usgs.gov/GIS/dsdl/USGS_Streamgages-NHD_Locations_Shape.zip > source_data/USGS_Streamgages-NHD_Locations_Shape.zip`  
-> `unzip source_data/HYSETS_data/USGS_Streamgages-NHD_Locations_Shape.zip`
+> `cd source_data/HYSETS_data/`  
+> `mkdir USGS_station_locations/`  
+> `curl -O https://water.usgs.gov/GIS/dsdl/USGS_Streamgages-NHD_Locations_Shape.zip > USGS_Streamgages-NHD_Locations_Shape.zip`  
+> `unzip USGS_Streamgages-NHD_Locations_Shape.zip -d USGS_station_locations/`
 
 Note that these are station locations and not pour points, but they are
 used by the basin delineation code as a first approximation in a
@@ -92,7 +95,7 @@ a list of DEM files corresponding to the layers of interest.
 Make two source directories for DEM data and raw files. At the root
 directory level:
 
-> `cd hysets_validation/source_data`  
+> `cd hysets_validation/source_data`
 > `mkdir dem_data/ dem_data/dem_files`
 
 The custom file lists I generated for BC/AK/WA are provided in the
@@ -208,7 +211,7 @@ read zip files of polygons:
 > `for dir in */; do mv "$dir"/*PourPoint* "$dir"/pour_point; done`  
 > `for dir in */; do mv "$dir"/*Station* "$dir"/station`
 
-Clean up the files: &gt;`rm -r WSC_Basins.gdb *.qgz`
+Clean up the files: &gt;`rm -r WSC_Basins.gdb *.qgz *.zip`
 
 The file containing currently publicly available WSC station basin
 polygons can be retrieved by the command below. The collection is less

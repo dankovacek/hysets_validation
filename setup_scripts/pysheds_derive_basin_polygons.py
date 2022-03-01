@@ -27,28 +27,96 @@ processed_dem_dir = dem_dir + 'processed_dem/'
 
 # t7_media_path = '/media/danbot/T7 Touch/thesis_data/processed_stations/'
 
-basin_polygons_path = BASE_DIR + 'processed_data/merged_basin_groups/final_polygons/'
+basin_polygons_path = BASE_DIR + '/processed_data/merged_basin_groups/final_polygons/'
 
-output_basin_polygon_path = BASE_DIR + 'processed_data/processed_basin_polygons/'
+output_basin_polygon_path = BASE_DIR + '/processed_data/processed_basin_polygons/'
 
 hysets_data_path = os.path.join(BASE_DIR, 'source_data/HYSETS_data/')
-hysets_df = pd.read_csv(hysets_data_path + 'HYSETS_watershed_properties.txt', sep=';')
+hysets_df = pd.read_csv(hysets_data_path + '/HYSETS_watershed_properties.txt', sep=';')
 
-# station_locs = [Point(e[''])]
+USGS_stn_locs_path = hysets_data_path + '/USGS_station_locations/'
+usgs_df = gpd.read_file(USGS_stn_locs_path, layer='USGS_Streamgages-NHD_Locations')
 
-hysets_nc_path = '/media/danbot/Samsung_T5/geospatial_data/HYSETS_data/'
-foo = rxr.open_rasterio(hysets_nc_path + 'HYSETS_2020_QC_stations.nc')
-print(foo)
+usgs_df = usgs_df.to_crs(3005)
+usgs_df['Official_ID'] = usgs_df['SITE_NO']
 
-print(hysets_df.columns)
+# wsc_path = os.path.join(BASE_DIR, 'source_data/WSC_data')
+# wsc_pp_geom_base = wsc_path + 'all/'
+# print(wsc_pp_geom_base)
 
-hysets_gdf = gpd.GeoDataFrame()
-print(asdfsa)
+wsc_df = pd.read_csv(os.path.join(BASE_DIR, 'source_data/WSC_Stations_2020.csv'))
+wsc_locs = [Point(x, y) for x, y in zip(wsc_df['Longitude'].values, wsc_df['Latitude'])]
+wsc_df = gpd.GeoDataFrame(wsc_df, geometry=wsc_locs, crs='EPSG:4269')
+wsc_df = wsc_df.to_crs(3005)
+wsc_stations = wsc_df['Station Number'].values
+wsc_df['Official_ID'] = wsc_df['Station Number']
 
-# maps region codes to 
-code_dict_path = BASE_DIR + '/validate_hysets/20220211_code_dict.pickle'
-with open(code_dict_path, 'rb') as handle:
-    code_dict = pickle.load(handle)
+
+hysets_df = pd.read_csv(os.path.join(BASE_DIR, 'source_data/HYSETS_data/HYSETS_watershed_properties.txt'), sep=';')
+
+hysets_locs = [Point(x, y) for x, y in zip(hysets_df['Centroid_Lon_deg_E'].values, hysets_df['Centroid_Lat_deg_N'])]
+hysets_df = gpd.GeoDataFrame(hysets_df, geometry=hysets_locs, crs='EPSG:4269')
+hysets_df = hysets_df.to_crs(3005)
+
+combined_df = wsc_df[['Official_ID', 'geometry']].append(hysets_df[['Official_ID', 'geometry']])
+
+# drop duplicates, but keep the first station polygon
+combined_df.drop_duplicates(subset='Official_ID', keep='first', inplace=True, ignore_index=True)
+
+stn_loc_df = wsc_df[['Official_ID', 'geometry']].append(usgs_df[['Official_ID', 'geometry']], ignore_index=True)
+
+stn_loc_df = stn_loc_df[stn_loc_df['Official_ID'].isin(hysets_df['Official_ID'].values)]
+
+
+def get_grp_polygon(basin_polygons_path, polygon_fnames, grp_code):
+    grp_polygon_path = [e for e in polygon_fnames if grp_code in e][0]
+    grp_polygon = gpd.read_file(basin_polygons_path + grp_polygon_path)
+    grp_polygon = grp_polygon.to_crs(3005)
+    grp_polygon['grp'] = grp_code
+    grp_polygon = grp_polygon.dissolve(by='grp', aggfunc='sum')
+    return grp_polygon
+
+# get all the stations that fall within the study area
+def map_stations_to_basin_groups(nhn_group_polygon_path):    
+
+    # create a dict to organize stations by their location in the regional groupings
+    region_dict = {}
+    regional_group_polygon_fnames = os.listdir(nhn_group_polygon_path)
+    code_dict = {}
+    for fname in regional_group_polygon_fnames:
+        grp_code = fname.split('_')[0]
+        print(f'  Finding HYSETS stations within {grp_code}.')
+        grp_polygon = get_grp_polygon(basin_polygons_path, regional_group_polygon_fnames, grp_code)
+
+        intersecting_pts = gpd.sjoin(stn_loc_df, grp_polygon, how='inner', predicate='intersects')
+        station_IDs = list(intersecting_pts['Official_ID'].values)
+        region_dict[grp_code] = station_IDs
+        # stations must also be in wsc basin list
+        missing_stns = [e for e in station_IDs if e not in wsc_stations]
+        if len(missing_stns) > 0:
+            print(f'   {missing_stns} are included in the HYSETS database but are not found in the WSC station list.')
+
+        for stn in station_IDs:
+            if stn in code_dict.keys():
+                print(f'  for some reason, {stn} is already in code_dict...')
+                print(f'    under {grp_code}, code_dict[stn] = {code_dict[stn]}')
+            code_dict[stn] = grp_code
+            
+    return code_dict
+
+stn_mapper_path = os.path.join(BASE_DIR, 'processed_data/')
+mapper_dict_file = 'station_to_region_mapper.pickle'
+if not os.path.exists(stn_mapper_path):
+    os.mkdir(stn_mapper_path)
+
+existing_mappers = os.listdir(stn_mapper_path)
+if mapper_dict_file not in existing_mappers:
+    code_dict = map_stations_to_basin_groups(basin_polygons_path)
+    with open(stn_mapper_path + mapper_dict_file, 'wb') as handle:
+        pickle.dump(code_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+else:
+    with open(stn_mapper_path + mapper_dict_file, 'rb') as handle:
+        code_dict = pickle.load(handle)
 
 
 def ensure_dir(file_path):
@@ -114,7 +182,7 @@ def pysheds_basin_polygon(stn, grid, catch, crs, affine, out_path):
 
 def pysheds_delineation(grid, fdir, acc, station, threshold):
 
-    location = hysets_data[hysets_data['OfficialID'] == station]
+    location = stn_loc_df[stn_loc_df['Official_ID'] == station]
 
     sp_pt = location.geometry.values[0]
     x, y = sp_pt.x, sp_pt.y
@@ -125,7 +193,11 @@ def pysheds_delineation(grid, fdir, acc, station, threshold):
     x_snap, y_snap = grid.snap_to_mask(acc > threshold, (x, y))
 
     distance = np.sqrt((x_snap - x)**2 + (y_snap - y)**2)
-    # print(f'   ...difference btwn. nearest and PYSHEDS snap = {distance:1f}')
+
+    print(f'   ...difference btwn. nearest and PYSHEDS snap = {distance:1f}')
+    snapped_loc = Point(x_snap, y_snap)
+    snapped_loc_gdf = gpd.GeoDataFrame(geometry=[snapped_loc], crs=stn_loc_df.crs)
+    snapped_loc_gdf.to_file(os.path.join(stn_mapper_path, 'snapped_locations'))
 
     # Delineate the catchment
     catch = grid.catchment(x=x_snap, y=y_snap, fdir=fdir, dirmap=dirmap, xytype='coordinate')
