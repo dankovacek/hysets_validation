@@ -149,7 +149,7 @@ def fill_holes(data):
             gap_list.append(Polygon(i))
         data_gaps = gpd.GeoDataFrame(geometry=gap_list, crs=data.crs)
         
-        appended_set = data.append(data_gaps)
+        appended_set = pd.concat([data, data_gaps])
         appended_set['group'] = 0
         merged_polygon = appended_set.dissolve(by='group')
         return merged_polygon.geometry.values[0]
