@@ -138,7 +138,7 @@ dem_crs = dem.rio.crs.to_epsg()
 
 # save the output file
 bc_merged_filled = bc_merged_filled.to_crs(dem_crs)
-output_folder = os.path.join(DATA_DIR, 'processed_data/merged_basin_groups/')
+output_folder = os.path.join(BASE_DIR, 'processed_data/merged_basin_groups/')
 if not os.path.exists(output_folder):
     os.mkdir(output_folder)
 bc_merged_filled.to_file(output_folder + f'BC_basin_region_groups_EPSG{dem_crs}.geojson', driver='GeoJSON')
