@@ -259,7 +259,7 @@ for resolution in resolutions:
         print(foo.rio.crs)
         print(type(foo))
 
-        grid = Grid.from_raster(foo)
+        grid = Grid.from_raster(foo, data_name='dem')
 
         dem = grid.read_raster(region_dem_path)
 
