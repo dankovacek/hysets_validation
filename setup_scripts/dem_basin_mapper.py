@@ -25,13 +25,13 @@ t0 = time.time()
 dem_dir = os.path.join(BASE_DIR, 'source_data/dem_data/')
 # dem_dir = '/media/danbot/Samsung_T5/geospatial_data/DEM_data/'
 
-bc_basins_file = DATA_DIR + 'merged_basin_groups/BC_basin_region_groups_EPSG4326.geojson'
-bc_basins = gpd.read_file(bc_basins_file)
-bc_basins['Area_km2'] = bc_basins.geometry.area / 1E6
-bc_basins.reset_index(inplace=True)
-bc_basins = bc_basins.sort_values('Area_km2')
-bc_basins.reset_index(inplace=True, drop=True)
-basins_crs = bc_basins.crs
+bc_region_final_polygons_folder = DATA_DIR + 'merged_basin_groups/final_polygons/'
+# bc_basins = gpd.read_file(bc_basins_file)
+# bc_basins['Area_km2'] = bc_basins.geometry.area / 1E6
+# bc_basins.reset_index(inplace=True)
+# bc_basins = bc_basins.sort_values('Area_km2')
+# bc_basins.reset_index(inplace=True, drop=True)
+# basins_crs = bc_basins.crs
 
 dem_mosaic_file = dem_dir + 'BC_DEM_mosaic_4326.vrt'
 
@@ -77,73 +77,73 @@ def filter_polygons_by_elevation(grp_code, area_polygons):
     return polygon_to_keep, raster_crs
                 
 
-def trim_raster_mask_polygon(grp_code):
+# def trim_raster_mask_polygon(grp_code):
 
-    group_polygon = bc_basins[bc_basins['group_name'] == grp_code].copy()
+#     group_polygon = bc_basins[bc_basins['group_name'] == grp_code].copy()
 
 
-    # figure out which regions are covered instead by alaska
-    # create two separate functions: one for BC coast, one for AK
-    # because AK coast is polygon, not line...
-    # alaska polygon goes through 08A, 08B, 08C, 08D.
-    # if grp_code in ['08A','08B','08C','08D']:
-    #     coast_geometry = ak_coast.copy()
-    # elif grp_code in []:
-    #     # remaining are covered by BC coastal polygon
-    #     coast_geometry = bc_coast.copy()
-    # else:
-    #     print(f'   ..{grp_code} does not lie along the coast.')
-    #     return None
+#     # figure out which regions are covered instead by alaska
+#     # create two separate functions: one for BC coast, one for AK
+#     # because AK coast is polygon, not line...
+#     # alaska polygon goes through 08A, 08B, 08C, 08D.
+#     # if grp_code in ['08A','08B','08C','08D']:
+#     #     coast_geometry = ak_coast.copy()
+#     # elif grp_code in []:
+#     #     # remaining are covered by BC coastal polygon
+#     #     coast_geometry = bc_coast.copy()
+#     # else:
+#     #     print(f'   ..{grp_code} does not lie along the coast.')
+#     #     return None
     
-    filtered_coast = gpd.sjoin(coast_geometry, group_polygon, how='inner', predicate='intersects')
-    coastline_polygons = filtered_coast[filtered_coast['is_ring']].copy()
-    coastline_lines = filtered_coast[~filtered_coast['is_ring']].copy()
-    coastline_lines['line_type'] = 'coastline'
+#     filtered_coast = gpd.sjoin(coast_geometry, group_polygon, how='inner', predicate='intersects')
+#     coastline_polygons = filtered_coast[filtered_coast['is_ring']].copy()
+#     coastline_lines = filtered_coast[~filtered_coast['is_ring']].copy()
+#     coastline_lines['line_type'] = 'coastline'
 
-    # merge the coastline linestrings into a multiline string
-    merged_coastline = linemerge(coastline_lines.geometry.values)
-    gdf = gpd.GeoDataFrame(geometry=[merged_coastline], crs=coastline_lines.crs)
+#     # merge the coastline linestrings into a multiline string
+#     merged_coastline = linemerge(coastline_lines.geometry.values)
+#     gdf = gpd.GeoDataFrame(geometry=[merged_coastline], crs=coastline_lines.crs)
 
-    coastline = gdf.explode(index_parts=False)
-    coastline['is_ring'] = coastline.geometry.is_ring
-    coastline = coastline[~coastline['is_ring']]
+#     coastline = gdf.explode(index_parts=False)
+#     coastline['is_ring'] = coastline.geometry.is_ring
+#     coastline = coastline[~coastline['is_ring']]
 
-    group_polygon = group_polygon.to_crs(3005).reset_index()
-    coastline = coastline.to_crs(3005).reset_index()
-    coast_section_length = coastline.geometry.length / 1E3
-    print(f'   ...{grp_code} segment coast length is {coast_section_length:.1} km long')
+#     group_polygon = group_polygon.to_crs(3005).reset_index()
+#     coastline = coastline.to_crs(3005).reset_index()
+#     coast_section_length = coastline.geometry.length / 1E3
+#     print(f'   ...{grp_code} segment coast length is {coast_section_length:.1} km long')
 
-    # if you add a 1m buffer to the coastline linestring    
-    # and subtract it from the polygon, you get new polygons
-    split_polygon = group_polygon.difference(coastline.buffer(1))
-    # explode the resulting split (multipolygon) into individual polygons
-    area_polygons = split_polygon.explode(index_parts=False)
-    # filtering out the rings and merging the coastline linestring
-    # should leave a single line object that can cut the overlapped
-    # polygon in two.  There should only be two resulting polygons,
-    # so discart the one with ~zero mean elevation because it's ocean.
-    polygon_to_keep, raster_crs = filter_polygons_by_elevation(grp_code, area_polygons)
+#     # if you add a 1m buffer to the coastline linestring    
+#     # and subtract it from the polygon, you get new polygons
+#     split_polygon = group_polygon.difference(coastline.buffer(1))
+#     # explode the resulting split (multipolygon) into individual polygons
+#     area_polygons = split_polygon.explode(index_parts=False)
+#     # filtering out the rings and merging the coastline linestring
+#     # should leave a single line object that can cut the overlapped
+#     # polygon in two.  There should only be two resulting polygons,
+#     # so discart the one with ~zero mean elevation because it's ocean.
+#     polygon_to_keep, raster_crs = filter_polygons_by_elevation(grp_code, area_polygons)
 
-    # add any small islands that are included in the coastline geometry
-    coastline_polygons = coastline_polygons.to_crs(raster_crs)
-    coastline_polygons['area'] = coastline_polygons.geometry.area
-    # Trim out small islands
-    coastline_polygons = coastline_polygons[coastline_polygons['area'] >= 1E6]
+#     # add any small islands that are included in the coastline geometry
+#     coastline_polygons = coastline_polygons.to_crs(raster_crs)
+#     coastline_polygons['area'] = coastline_polygons.geometry.area
+#     # Trim out small islands
+#     coastline_polygons = coastline_polygons[coastline_polygons['area'] >= 1E6]
     
-    all_polygons = coastline_polygons.append(gpd.GeoDataFrame(geometry=[polygon_to_keep], crs=raster_crs))
+#     all_polygons = coastline_polygons.append(gpd.GeoDataFrame(geometry=[polygon_to_keep], crs=raster_crs))
 
-    all_polygons['group_code'] = grp_code
-    dissolved_polygons = all_polygons.dissolve(by='group_code', dropna=True, aggfunc='sum')
-    dissolved_polygons['area'] = dissolved_polygons.geometry.area
+#     all_polygons['group_code'] = grp_code
+#     dissolved_polygons = all_polygons.dissolve(by='group_code', dropna=True, aggfunc='sum')
+#     dissolved_polygons['area'] = dissolved_polygons.geometry.area
 
-    # save the file as a new polygon to be used as the dem mask
-    mask_polygon = dissolved_polygons.to_crs(4326)
-    mask_output_fpath = DATA_DIR + f'merged_basin_groups/split_groups/{grp_code}_4326_trimmed.geojson'
-    mask_polygon.to_file(mask_output_fpath, driver='GeoJSON')
+#     # save the file as a new polygon to be used as the dem mask
+#     mask_polygon = dissolved_polygons.to_crs(4326)
+#     mask_output_fpath = DATA_DIR + f'merged_basin_groups/split_groups/{grp_code}_4326_trimmed.geojson'
+#     mask_polygon.to_file(mask_output_fpath, driver='GeoJSON')
 
 dem_crs, (w_res, h_res) = get_crs_and_resolution(dem_mosaic_file)
 
-bc_basins = bc_basins.to_crs(dem_crs)
+# bc_basins = bc_basins.to_crs(dem_crs)
 
 
 def check_mask_validity(mask_path):
@@ -174,26 +174,31 @@ def check_mask_validity(mask_path):
             print(f'   ...invalid mask could not be corrected')
 
 
-for i, grp in bc_basins.iterrows():
+all_masks = os.listdir(bc_region_final_polygons_folder)
 
-    grp_code = grp['group_name']
+for file in all_masks:
+
+    fpath = bc_region_final_polygons_folder + file
+
+    grp_code = file.split('_')[0]
     print(f'Starting polygon merge on {grp_code}.')
 
-    bounds = grp.geometry.bounds
+    region_polygon = gpd.read_file(fpath, driver='GeoJSON')
+    bounds = region_polygon.geometry.bounds
 
-    eligible_mask_files = [e for e in os.listdir(mask_dir) if e.startswith(grp_code)]
+    # eligible_mask_files = [e for e in os.listdir(mask_dir) if e.startswith(grp_code)]
 
-    # coastal region masks have the 'trimmed' suffix because they
-    # required an extra step to remove the ocean
-    trimmed_file = [e for e in eligible_mask_files if e.endswith('trimmed.geojson')]
+    # # coastal region masks have the 'trimmed' suffix because they
+    # # required an extra step to remove the ocean
+    # trimmed_file = [e for e in eligible_mask_files if e.endswith('trimmed.geojson')]
     
     named_layer = f'{grp_code}_4326'
-    if len(trimmed_file) == 1:
-        named_layer = f'{grp_code}_4326_trimmed'
+    # if len(trimmed_file) == 1:
+    #     named_layer = f'{grp_code}_4326_trimmed'
 
-    mask_path = mask_dir + f'{named_layer}.geojson'
+    # mask_path = mask_dir + f'{named_layer}.geojson'
 
-    mask_check = check_mask_validity(mask_path)
+    mask_check = check_mask_validity(fpath)
     
     for res in ['res8', 'res4', 'res2', 'res1']:
         # set the output initial path and reprojected path
@@ -214,7 +219,7 @@ for i, grp in bc_basins.iterrows():
 
         if not os.path.exists(out_path_reprojected):
 
-            command = f'gdalwarp -s_srs epsg:4326 -cutline {mask_path} -cl {named_layer} -crop_to_cutline -tr {trw} {trh} -multi -of gtiff {dem_mosaic_file} {out_path} -wo NUM_THREADS=ALL_CPUS'
+            command = f'gdalwarp -s_srs epsg:4326 -cutline {fpath} -cl {named_layer} -crop_to_cutline -tr {trw} {trh} -multi -of gtiff {dem_mosaic_file} {out_path} -wo NUM_THREADS=ALL_CPUS'
             try:
                 os.system(command)
             except Exception as e:
@@ -240,7 +245,7 @@ for i, grp in bc_basins.iterrows():
             print(f'   ...{fname} exists, skipping dem reprojection..')
     
     t1 = time.time()
-    print(f'      {i}/{len(bc_basins)} Completed tile merge: {grp_code}_DEM_1as.tif created in {t1-t0:.1f}s.')
+    print(f'      {i}/{len(all_masks)} Completed tile merge: {grp_code}_DEM_1as.tif created in {t1-t0:.1f}s.')
     print('')
     print('')
     
