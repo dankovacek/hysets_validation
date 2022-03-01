@@ -241,16 +241,20 @@ resolutions = sorted(list(set([e.split('.')[0].split('_')[-1] for e in dem_files
 
 print(f'  The following DEM resolutions were found and will be used to process basins: {resolutions}')
 
-for resolution in resolutions:
+for resolution in ['low']:#resolutions:
     for region_code in region_codes:
         # get the covering region for the station
         t_start = time.time()
 
         print(f'Starting analysis on region {region_code} {i}/{len(region_codes)}.')
+
+        
         # load the region DEM once and iterate through all
         region_dem_path = os.path.join(processed_dem_dir, f'{region_code}_DEM_3005_{resolution}.tif')
+        # foo = '/media/danbot/Samsung_T5/geospatial_data/DEM_data/processed_dem'
+        # region_dem_path = os.path.join(foo, f'{region_code}_DEM_3005_{resolution}.tif')
 
-        print(region_dem_path)
+        # print(region_dem_path)
 
 
         grid = Grid.from_raster(region_dem_path, data_name='dem')
@@ -282,7 +286,7 @@ for resolution in resolutions:
 
                 # snap_point_path = f'/media/danbot/Samsung_T5/geospatial_data/WSC_data/reprojected_data/{station}/{station}_pour_point.geojson'
 
-                catch = pysheds_delineation(grid, fdir, acc, acc_threshold)
+                catch = pysheds_delineation(grid, fdir, acc, station, acc_threshold)
                 
                 basin_created = pysheds_basin_polygon(station, grid, catch, dem_crs, dem_affine, basin_out_path)
                 
