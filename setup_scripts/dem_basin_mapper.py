@@ -189,7 +189,7 @@ for file in all_masks:
 
     mask_polygon = gpd.read_file(fpath, driver='GeoJSON')
     print(f'mask crs: {mask_polygon.crs}')
-    bounds = mask_polygon.geometry.bounds
+    # bounds = mask_polygon.geometry.bounds
 
     # eligible_mask_files = [e for e in os.listdir(mask_dir) if e.startswith(grp_code)]
 
@@ -219,12 +219,12 @@ for file in all_masks:
         else:
             rfactor = 1
 
-        trw = abs(w_res*rfactor)
-        trh = abs(h_res*rfactor)
+        trw = round(abs(w_res*rfactor), 4)
+        trh = round(abs(h_res*rfactor), 4)
 
         if not os.path.exists(out_path_reprojected):
 
-            command = f'gdalwarp -s_srs epsg:4326 -cutline {fpath} -cl {named_layer} -crop_to_cutline -tr {trw} {trh} -multi -of gtiff {dem_mosaic_file} {out_path} -wo NUM_THREADS=ALL_CPUS'
+            command = f'gdalwarp -s_srs epsg:4269 -cutline {fpath} -cl {named_layer} -crop_to_cutline -tr {trw} {trh} -multi -of gtiff {dem_mosaic_file} {out_path} -wo NUM_THREADS=ALL_CPUS'
             print('')
             print('__________________')
             print(command)
