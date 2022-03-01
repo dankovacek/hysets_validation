@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+<idinfo>
+<citation>
+<citeinfo>
+<origin>NOAA Center for Tsunami Research</origin>
+<pubdate>2006</pubdate>
+<title>Shoreline for the Pacific Northwest Region (shoreline_pacnw.shp)</title>
+<edition>1</edition>
+<geoform>vector digital data</geoform>
+<pubinfo>
+<pubplace>Menlo Park, California</pubplace>
+<publish>U.S. Geological Survey</publish>
+</pubinfo>
+<onlink>http://pubs.usgs.gov/ds/2006/236/catalog.shtml</onlink>
+<lworkcit>
+<citeinfo>
+<origin>Florence L. Wong</origin>
+<origin>Angie J. Venturato</origin>
+<origin>Eric L. Geist</origin>
+<pubdate>2006</pubdate>
+<title>Seaside, Oregon Tsunami Pilot Study -- Modernization of FEMA Flood Hazard Maps: GIS Data</title>
+<geoform>vector digital data</geoform>
+<serinfo>
+<sername>U.S. Geological Survey Data Series</sername>
+<issue>236</issue>
+</serinfo>
+<pubinfo>
+<pubplace>Menlo Park, California</pubplace>
+<publish>U.S. Geological Survey</publish>
+</pubinfo>
+<onlink>http://pubs.usgs.gov/ds/2006/236/</onlink>
+</citeinfo>
+</lworkcit>
+</citeinfo>
+</citation>
+<descript>
+<abstract>This data set is a polygon shapefile representing shoreline defined as the zero contour at Mean High Water for the states of Oregon and Washington, and southern British Columbia, Canada.</abstract>
+<purpose>
+This data set is one of a collection of spatially referenced digital files in a geographic information system related to the Seaside, Oregon, Tsunami Pilot Study.
+
+Federal Emergency Management Agency (FEMA) Federal Insurance Rate Map (FIRM) guidelines do not currently exist for conducting and incorporating tsunami hazard assessments that reflect the substantial advances in tsunami research achieved in the last two decades (Tsunami Pilot Study Working Group, 2006). Therefore, as part of the FEMA Modernization Program, a Tsunami Pilot Study was carried out in the Seaside/Gearhart, Oregon, area to provide information from which tsunami mapping guidelines could be developed. This area was chosen because it is typical of coastal communities in the section of the Pacific Coast from Cape Mendocino to the Strait of Juan de Fuca. There was also considerable interest shown by state agencies and local stakeholders in mapping the tsunami threat to this region. The study was an interagency effort by scientists from the U.S. Geological Survey, the National Oceanic and Atmospheric Administration, the University of Southern California, and the Middle East Technical University.  We present the GIS data from that report in this publication.
+
+These data are intended for science researchers, students, policy makers, and the general public.  The data can be used with geographic information systems (GIS) software to display geologic and oceanographic information.
+</purpose>
+</descript>
+<timeperd>
+<timeinfo>
+<sngdate>
+<caldate>2006</caldate>
+</sngdate>
+</timeinfo>
+<current>publication date</current>
+</timeperd>
+<status>
+<progress>Complete</progress>
+<update>None planned</update>
+</status>
+<spdom>
+<bounding>
+<westbc>-125.324097</westbc>
+<eastbc>-121.179734</eastbc>
+<northbc>49.117737</northbc>
+<southbc>41.880538</southbc>
+</bounding>
+</spdom>
+<keywords>
+<theme>
+<themekt>none</themekt>
+<themekey>shoreline</themekey>
+<themekey>Mean High Water</themekey>
+<themekey>coastline</themekey>
+</theme>
+<place>
+<placekt>Geographic Names Information System</placekt>
+<placekey>Seaside, Oregon</placekey>
+<placekey>Gearhart, Oregon</placekey>
+<placekey>Oregon</placekey>
+<placekey>Washington</placekey>
+<placekey>British Columbia</placekey>
+<placekey>USA</placekey>
+<placekey>Canada</placekey>
+</place>
+<temporal>
+<tempkt>none</tempkt>
+<tempkey>2000</tempkey>
+</temporal>
+</keywords>
+<accconst>None.</accconst>
+<useconst>
+These data were created for the sole purpose of the Seaside, Oregon, Tsunami Pilot Study.  It is not meant for navigational means.  The National Oceanic and Atmospheric Administration makes no expressed or implied warranty regarding the accuracy of these data.
+
+The act of distribution shall not constitute any such warranty, and no responsibility is assumed by the U.S. Geological Survey in the use of these data on any other system.
+
+Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government.
+</useconst>
+<ptcontac>
+<cntinfo>
+<cntperp>
+<cntper>Angie J. Venturato</cntper>
+<cntorg>NOAA Center for Tsunami Research</cntorg>
+</cntperp>
+<cntpos>Research Scientist</cntpos>
+<cntaddr>
+<addrtype>mailing address</addrtype>
+<address>7600 Sand Point Way NE</address>
+<city>Seattle</city>
+<state>Washington</state>
+<postal>98115</postal>
+<country>USA</country>
+</cntaddr>
+<cntvoice>206-526-6556</cntvoice>
+<cntemail>Angie.J.Venturato@noaa.gov</cntemail>
+</cntinfo>
+</ptcontac>
+<browse>
+<browsen>http://pubs.usgs.gov/ds/2006/236/metadata/shoreline_pacnw.gif</browsen>
+<browsed>Mean High Water coastline of Oregon and Washington.</browsed>
+<browset>GIF</browset>
+</browse>
+<datacred>Washington State Department of Ecology, Oregon Bureau of Land Management, U.S. Geological Survey National Aerial Photography Program.</datacred>
+<native>Microsoft Windows XP Version 5.1 (Build 2600) Service Pack 2; ESRI ArcCatalog 9.1.0.722</native>
+<crossref>
+<citeinfo>
+<origin>Tsunami Pilot Study Working Group</origin>
+<pubdate>2006</pubdate>
+<title>Seaside, Oregon Tsunami Pilot Study -- Modernization of FEMA Flood Hazard Maps</title>
+<edition>1</edition>
+<serinfo>
+<sername>U.S. Geological Survey Open-File Report</sername>
+<issue>2006-1234</issue>
+</serinfo>
+<pubinfo>
+<pubplace>Menlo Park, California</pubplace>
+<publish>U.S. Geological Survey</publish>
+</pubinfo>
+<onlink>http://pubs.usgs.gov/of/2006/1234/</onlink>
+</citeinfo>
+</crossref>
+<crossref>
+<citeinfo>
+<origin>Venturato, A.J.</origin>
+<pubdate>2005</pubdate>
+<title>A digital elevation model for Seaside, Oregon: Procedures, data sources, and analyses</title>
+<onlink>http://www.pmel.noaa.gov/pubs/PDF/vent2812/vent2812.pdf</onlink>
+</citeinfo>
+</crossref>
+<crossref>
+<citeinfo>
+<origin>Washington State Department of Ecology</origin>
+<pubdate>20010830</pubdate>
+<title>Washington State Marine Shorelines</title>
+<geoform>vector digital data</geoform>
+<pubinfo>
+<pubplace>Olympia, Washington</pubplace>
+<publish>Washington State Department of Ecology</publish>
+</pubinfo>
+<onlink>http://www.ecy.wa.gov/</onlink>
+</citeinfo>
+</crossref>
+<crossref>
+<citeinfo>
+<origin>Oregon Bureau of Land Management</origin>
+<pubdate>2001</pubdate>
+<title>Oregon Watershed Boundaries</title>
+<geoform>vector digital data</geoform>
+<pubinfo>
+<pubplace>Portland, Oregon</pubplace>
+<publish>Oregon Bureau of Land Management</publish>
+</pubinfo>
+<othercit>The data were obtained through the Oregon Geospatial Data Clearinghouse</othercit>
+<onlink>http://www.oregon.gov/DAS/IRMD/GEO/</onlink>
+</citeinfo>
+</crossref>
+<crossref>
+<citeinfo>
+<origin>US Geological Survey National Aerial Photography Program</origin>
+<pubdate>2002</pubdate>
+<title>2000 Digital Orthophoto Quads</title>
+<geoform>raster digital data</geoform>
+<pubinfo>
+<pubplace>Reston, Virginia</pubplace>
+<publish>US Geological Survey</publish>
+</pubinfo>
+<othercit>These data were obtained through the Oregon Geospatial Data Clearinghouse</othercit>
+<onlink>http://www.oregon.gov/DAS/IRMD/GEO/</onlink>
+</citeinfo>
+</crossref>
+</idinfo>
+<dataqual>
+<attracc>
+<attraccr>
+These data contain attributes automatically generated by ESRI ArcGIS software, defined by the source, and additional
+user-defined attributes for use in analysis or model development.
+</attraccr>
+</attracc>
+<logic>These data represent an interpretation of the Mean High Water line from the latest available information.  The data set was checked for logical consistency to ensure there were no gaps or errant polygons.</logic>
+<complete>Complete.</complete>
+<lineage>
+<srcinfo>
+<srccite>
+<citeinfo>
+<origin>Washington State Department of Ecology</origin>
+<pubdate>20010830</pubdate>
+<title>Washington State Marine Shorelines</title>
+<geoform>vector digital data</geoform>
+<pubinfo>
+<pubplace>Olympia, Washington</pubplace>
+<publish>Washington State Department of Ecology</publish>
+</pubinfo>
+<onlink>http://www.ecy.wa.gov/</onlink>
+</citeinfo>
+</srccite>
+<typesrc>online</typesrc>
+<srctime>
+<timeinfo>
+<sngdate>
+<caldate>2001</caldate>
+</sngdate>
+</timeinfo>
+<srccurr>publication date</srccurr>
+</srctime>
+<srccitea>wa_shore</srccitea>
+<srccontr>shoreline representing Mean High Water for  Washington and lower British Columbia</srccontr>
+</srcinfo>
+<srcinfo>
+<srccite>
+<citeinfo>
+<origin>Oregon Bureau of Land Management</origin>
+<pubdate>2001</pubdate>
+<title>Oregon Watershed Boundaries</title>
+<geoform>vector digital data</geoform>
+<pubinfo>
+<pubplace>Portland, Oregon</pubplace>
+<publish>Oregon Bureau of Land Management</publish>
+</pubinfo>
+<othercit>The data were obtained through the Oregon Geospatial Data Clearinghouse</othercit>
+<onlink>http://www.oregon.gov/DAS/IRMD/GEO/</onlink>
+</citeinfo>
+</srccite>
+<srcscale>24000</srcscale>
+<typesrc>online</typesrc>
+<srctime>
+<timeinfo>
+<sngdate>
+<caldate>2001</caldate>
+</sngdate>
+</timeinfo>
+<srccurr>publication date</srccurr>
+</srctime>
+<srccitea>or_shore</srccitea>
+<srccontr>shoreline representing Mean High Water for Oregon</srccontr>
+</srcinfo>
+<srcinfo>
+<srccite>
+<citeinfo>
+<origin>US Geological Survey National Aerial Photography Program</origin>
+<pubdate>2002</pubdate>
+<title>2000 Digital Orthophoto Quads</title>
+<geoform>raster digital data</geoform>
+<pubinfo>
+<pubplace>Reston, Virginia</pubplace>
+<publish>US Geological Survey</publish>
+</pubinfo>
+<othercit>These data were obtained through the Oregon Geospatial Data Clearinghouse</othercit>
+<onlink>http://www.oregon.gov/DAS/IRMD/GEO/</onlink>
+</citeinfo>
+</srccite>
+<srcscale>24000</srcscale>
+<typesrc>online</typesrc>
+<srctime>
+<timeinfo>
+<sngdate>
+<caldate>2000</caldate>
+</sngdate>
+</timeinfo>
+<srccurr>ground condition</srccurr>
+</srctime>
+<srccitea>or_napp</srccitea>
+<srccontr>shoreline representing Mean High Water for the Seaside-Gearhart region</srccontr>
+</srcinfo>
+<procstep>
+<procdesc>DATA CONVERSION.  Each raw data source was converted into ESRI ArcGIS formats.  The resulting files were converted and adjusted to predetermined projection (geographic), horizontal datum (NAD83), and vertical datum (MHW).</procdesc>
+<srcused>wa_shore</srcused>
+<srcused>or_shore</srcused>
+<srcused>or_napp</srcused>
+<procdate>200408</procdate>
+</procstep>
+<procstep>
+<procdesc>COASTLINE.  A vector polyline shapefile of coastline was developed to represent the Mean High Water line.  The shapefile was developed based on a culmination of data sources.  The latest and most accurate data superseded older data sets.  Orthophotos were used as visual assessment of the final vector line.</procdesc>
+<srcused>wa_shore</srcused>
+<srcused>or_shore</srcused>
+<srcused>or_napp</srcused>
+<procdate>2004</procdate>
+<srcprod>shoreline_pacnw</srcprod>
+</procstep>
+</lineage>
+</dataqual>
+<spdoinfo>
+<direct>Vector</direct>
+<ptvctinf>
+<sdtsterm>
+<sdtstype>G-polygon</sdtstype>
+<ptvctcnt>861</ptvctcnt>
+</sdtsterm>
+</ptvctinf>
+</spdoinfo>
+<spref>
+<horizsys>
+<geograph>
+<latres>1.000000</latres>
+<longres>1.000000</longres>
+<geogunit>Decimal degrees</geogunit>
+</geograph>
+<geodetic>
+<horizdn>North American Datum of 1983</horizdn>
+<ellips>Geodetic Reference System 80</ellips>
+<semiaxis>6378137.000000</semiaxis>
+<denflat>298.257222</denflat>
+</geodetic>
+</horizsys>
+</spref>
+<eainfo>
+<detailed>
+<enttyp>
+<enttypl>shoreline_pacnw</enttypl>
+<enttypd>name of shapefile</enttypd>
+<enttypds>none</enttypds>
+</enttyp>
+<attr>
+<attrlabl>FID</attrlabl>
+<attrdef>Internal feature number.</attrdef>
+<attrdefs>ESRI</attrdefs>
+<attrdomv>
+<udom>Sequential unique whole numbers that are automatically generated.</udom>
+</attrdomv>
+</attr>
+<attr>
+<attrlabl>Shape</attrlabl>
+<attrdef>Feature geometry.</attrdef>
+<attrdefs>ESRI</attrdefs>
+<attrdomv>
+<udom>Coordinates defining the features.</udom>
+</attrdomv>
+</attr>
+<attr>
+<attrlabl>COAST</attrlabl>
+<attrdef>elevation used for modeling</attrdef>
+<attrdefs>User-defined</attrdefs>
+<attrdomv>
+<udom>Refer to Venturato cross reference</udom>
+</attrdomv>
+</attr>
+<attr>
+<attrlabl>SOURCETHM</attrlabl>
+<attrdef>Source of feature</attrdef>
+<attrdefs>User-defined</attrdefs>
+<attrdomv>
+<udom>Refer to sources</udom>
+</attrdomv>
+</attr>
+<attr>
+<attrlabl>MHW</attrlabl>
+<attrdef>Mean High Water</attrdef>
+<attrdefs>National Ocean Service</attrdefs>
+<attrdomv>
+<udom>User-defined for modeling</udom>
+</attrdomv>
+</attr>
+<attr>
+<attrlabl>ACRES</attrlabl>
+<attrdef>area of polygon in acres</attrdef>
+<attrdefs>none</attrdefs>
+<attrdomv>
+<udom>Area defining the features.</udom>
+</attrdomv>
+</attr>
+<attr>
+<attrlabl>HECTARES</attrlabl>
+<attrdef>Area in hectares</attrdef>
+<attrdefs>none</attrdefs>
+<attrdomv>
+<udom>Area defining the features.</udom>
+</attrdomv>
+</attr>
+<attr>
+<attrlabl>MLLW</attrlabl>
+<attrdef>Mean Lower Low Water</attrdef>
+<attrdefs>National Ocean Service</attrdefs>
+<attrdomv>
+<udom>User-defined for modeling</udom>
+</attrdomv>
+</attr>
+<attr>
+<attrlabl>Z</attrlabl>
+<attrdef>Elevation in meters</attrdef>
+<attrdefs>User-defined</attrdefs>
+<attrdomv>
+<udom>User-defined for modeling</udom>
+</attrdomv>
+</attr>
+</detailed>
+</eainfo>
+<distinfo>
+<distrib>
+<cntinfo>
+<cntorgp>
+<cntorg>U.S. Geological Survey</cntorg>
+</cntorgp>
+<cntaddr>
+<addrtype>mailing address</addrtype>
+<address>USGS Information Services Box 25286</address>
+<city>Denver</city>
+<state>Colorado</state>
+<postal>80225-0286</postal>
+<country>USA</country>
+</cntaddr>
+<cntvoice>1-888-275-8747</cntvoice>
+<cntemail>infoservices@usgs.gov</cntemail>
+</cntinfo>
+</distrib>
+<resdesc>U.S. Geological Survey Data Series 236</resdesc>
+<distliab>The act of distribution shall not constitute any warranty expressed or implied by the U.S. Geological Survey as to the accuracy of these data, and no responsibility is assumed by the U.S. Geological Survey in the use of these data on any other system.</distliab>
+<stdorder>
+<digform>
+<digtinfo>
+<formname>ARCE</formname>
+<formvern>9.1</formvern>
+<formspec>ArcGIS shapefile</formspec>
+<filedec>no compression applied</filedec>
+<transize>0.020</transize>
+</digtinfo>
+<digtopt>
+<onlinopt>
+<computer>
+<networka>
+<networkr>http://pubs.usgs.gov/ds/2006/236/</networkr>
+</networka>
+</computer>
+</onlinopt>
+</digtopt>
+</digform>
+<fees>None.</fees>
+</stdorder>
+</distinfo>
+<metainfo>
+<metd>20060629</metd>
+<metrd>200607</metrd>
+<metc>
+<cntinfo>
+<cntorgp>
+<cntorg>NOAA Center for Tsunami Research</cntorg>
+<cntper>Angie J. Venturato</cntper>
+</cntorgp>
+<cntaddr>
+<addrtype>mailing address</addrtype>
+<address>7600 Sand Point Way NE</address>
+<city>Seattle</city>
+<state>Washington</state>
+<postal>98115</postal>
+<country>USA</country>
+</cntaddr>
+<cntvoice>206-526-6556</cntvoice>
+<cntemail>Angie.J.Venturato@noaa.gov</cntemail>
+</cntinfo>
+</metc>
+<metstdn>FGDC Content Standards for Digital Geospatial Metadata</metstdn>
+<metstdv>FGDC-STD-001-1998</metstdv>
+<mettc>local time</mettc>
+<metac>None</metac>
+<metuc>None</metuc>
+<metextns>
+<onlink>http://www.esri.com/metadata/esriprof80.html</onlink>
+<metprof>ESRI Metadata Profile</metprof>
+</metextns>
+</metainfo>
+</metadata>
