@@ -255,7 +255,7 @@ for resolution in resolutions:
 
         grid = Grid.from_raster(region_dem_path, data_name='dem')
 
-        dem = grid.read_raster(region_dem_path)
+        dem = grid.read_raster(region_dem_path, data_name='dem')
 
         conditioned_dem = pysheds_condition_dem(grid, dem)
 
