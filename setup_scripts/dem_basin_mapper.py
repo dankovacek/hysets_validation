@@ -18,12 +18,13 @@ from shapely.geometry import Polygon
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, 'processed_data/')
 
+
 mask_dir = DATA_DIR + f'merged_basin_groups/split_groups/'
 
 t0 = time.time()
 
 dem_dir = os.path.join(BASE_DIR, 'source_data/dem_data/')
-# dem_dir = '/media/danbot/Samsung_T5/geospatial_data/DEM_data/'
+dem_dir = '/media/danbot/Samsung_T5/geospatial_data/DEM_data/'
 
 bc_region_final_polygons_folder = DATA_DIR + 'merged_basin_groups/final_polygons/'
 # bc_basins = gpd.read_file(bc_basins_file)
@@ -180,6 +181,7 @@ def check_mask_validity(mask_path):
 
 all_masks = os.listdir(bc_region_final_polygons_folder)
 
+i = 0
 for file in all_masks:
 
     fpath = bc_region_final_polygons_folder + file
@@ -224,7 +226,7 @@ for file in all_masks:
 
         if not os.path.exists(out_path_reprojected):
 
-            command = f'gdalwarp -s_srs epsg:4269 -cutline {fpath} -cl {named_layer} -crop_to_cutline -tr {trw} {trh} -multi -of gtiff {dem_mosaic_file} {out_path} -wo NUM_THREADS=ALL_CPUS'
+            command = f'gdalwarp -s_srs epsg:4326 -cutline {fpath} -cl {named_layer} -crop_to_cutline -tr {trw} {trh} -multi -of gtiff {dem_mosaic_file} {out_path} -wo NUM_THREADS=ALL_CPUS'
             print('')
             print('__________________')
             print(command)
@@ -257,4 +259,5 @@ for file in all_masks:
     print(f'      {i}/{len(all_masks)} Completed tile merge: {grp_code}_DEM_1as.tif created in {t1-t0:.1f}s.')
     print('')
     print('')
+    i += 1
     
