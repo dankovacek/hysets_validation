@@ -255,6 +255,10 @@ for resolution in resolutions:
 
         print(region_dem_path)
 
+        foo = rxr.open_rasterio(region_dem_path)
+        print(foo.rio.crs)
+        print(type(foo))
+
         grid = Grid.from_raster(region_dem_path, data_name='dem')
 
         dem = grid.read_raster(region_dem_path, data_name='dem')
