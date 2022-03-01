@@ -24,7 +24,7 @@ mask_dir = DATA_DIR + f'merged_basin_groups/split_groups/'
 t0 = time.time()
 
 dem_dir = os.path.join(BASE_DIR, 'source_data/dem_data/')
-dem_dir = '/media/danbot/Samsung_T5/geospatial_data/DEM_data/'
+# dem_dir = '/media/danbot/Samsung_T5/geospatial_data/DEM_data/'
 
 bc_region_final_polygons_folder = DATA_DIR + 'merged_basin_groups/final_polygons/'
 # bc_basins = gpd.read_file(bc_basins_file)
