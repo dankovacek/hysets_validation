@@ -241,7 +241,7 @@ resolutions = sorted(list(set([e.split('.')[0].split('_')[-1] for e in dem_files
 
 print(f'  The following DEM resolutions were found and will be used to process basins: {resolutions}')
 
-for resolution in ['low']:#resolutions:
+for resolution in resolutions:
     for region_code in region_codes:
         # get the covering region for the station
         t_start = time.time()
