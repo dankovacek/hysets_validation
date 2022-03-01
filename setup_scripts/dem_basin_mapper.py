@@ -17,7 +17,6 @@ from shapely.geometry import Polygon
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, 'processed_data/')
-DEM_DIR = 
 
 mask_dir = DATA_DIR + f'merged_basin_groups/split_groups/'
 
