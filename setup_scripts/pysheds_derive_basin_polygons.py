@@ -253,11 +253,11 @@ for resolution in resolutions:
         # foo = '/media/danbot/Samsung_T5/geospatial_data/DEM_data/processed_dem'
         # region_dem_path = os.path.join(foo, f'{region_code}_DEM_3005_{resolution}.tif')
 
-        # print(region_dem_path)
+        print(region_dem_path)
 
-        grid = Grid.from_raster(region_dem_path)
+        grid = Grid.from_raster(region_dem_path, data_name='dem')
 
-        dem = grid.read_raster(region_dem_path)
+        dem = grid.read_raster(region_dem_path, data_name='dem')
 
         conditioned_dem = pysheds_condition_dem(grid, dem)
 
