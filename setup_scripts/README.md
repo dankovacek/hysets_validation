@@ -43,6 +43,19 @@ Install Python packages:
 Download Source Data
 --------------------
 
+### HYSETS
+
+From the project directory (`hysets_validation/`), create a directory to
+store the HYSETS study data (~ 14.6 GB. *Note: update the filename in
+the unzip command.*):
+
+> `mkdir source_data/HYSETS_data/`  
+> `curl -O https://files.osf.io/v1/resources/rpc3w/providers/googledrive/?zip=HYSETS_2020.zip > source_data/HYSETS_data/HYSETS_2020_data.zip`  
+> `unzip HYSETS_2020_data.zip`
+
+This file is particularly large, so open a second ssh connection and
+continue while this file is downloading.
+
 ### DEM Data (from USGS)
 
 The folder `setup_scripts/` contains two files
@@ -161,14 +174,6 @@ Updated set of basin polygons from WSC, published in December 2021.
 > `wget https://collaboration.cmc.ec.gc.ca/cmc/hydrometrics/www/HydrometricNetworkBasinPolygons/09.zip`  
 > `wget https://collaboration.cmc.ec.gc.ca/cmc/hydrometrics/www/HydrometricNetworkBasinPolygons/10.zip`
 
-The file containing currently publicly available WSC station basin
-polygons can be retrieved by the command below. The collection is less
-complete than the set available above, however the set above is not
-finalized/approved and is subject to revision.
-
-> `cd source_data/WSC_data/`  
-> `wget -P source_data/  http://donnees.ec.gc.ca/data/water/products/national-hydrometric-network-basin-polygons/WSC_Basins.gdb.zip`
-
 The `source_data` folder contains the WSC station metadata file of
 active and historic hydrometric stations `WSC_Stations_2020.csv`.
 
@@ -177,11 +182,22 @@ read zip files of polygons:
 
 > `mkdir all`  
 > `for x in *.zip; do unzip -d all -o -u $x ; done`  
-> `zip -r WSC_basins.zip all` `cd all/`  
+> `zip -r WSC_basins.zip all`  
+> `cd all/`  
 > `for dir in */; do mkdir -- "$dir"{basin,pour_point,station}; done`  
-> `for dir in */; do mv "$dir"/*DrainageBasin* "$dir"/basin`  
-> `for dir in */; do mv "$dir"/*PourPoint* "$dir"/pour_point`  
+> `for dir in */; do mv "$dir"/*DrainageBasin* "$dir"/basin; done`  
+> `for dir in */; do mv "$dir"/*PourPoint* "$dir"/pour_point; done`  
 > `for dir in */; do mv "$dir"/*Station* "$dir"/station`
+
+Clean up the files: &gt;`rm -r WSC_Basins.gdb *.qgz`
+
+The file containing currently publicly available WSC station basin
+polygons can be retrieved by the command below. The collection is less
+complete than the set available above, however the set above is not
+finalized/approved and is subject to revision.
+
+> `wget -P source_data/WSC_data/  https://donnees.ec.gc.ca/data/water/products/national-hydrometric-network-basin-polygons/WSC_Basins.gdb.zip`  
+> `unzip WSC_Basins.gdb.zip`
 
 Create geojson objects as separate data structures of all basins:
 &gt;`python process_wsc_basins.py`
@@ -199,19 +215,6 @@ stream vectors and save them as separate files. These will be used in
 the FillBurn processing step for dem conditioning.
 
 > `python group_stream_vectors.py`
-
-### HYSETS
-
-From the project directory (`hysets_validation/`), create a directory to
-store the HYSETS study data (~ 14.6 GB. *Note: update the filename in
-the unzip command.*):
-
-> `mkdir source_data/HYSETS_data/`  
-> `curl -O https://files.osf.io/v1/resources/rpc3w/providers/googledrive/?zip=HYSETS_2020.zip > source_data/HYSETS_data/HYSETS_2020_data.zip`  
-> `unzip HYSETS_2020_data.zip`
-
-This file is particularly large, so open a second ssh connection and
-continue while this file is downloading.
 
 **GLHYMPHS**
 

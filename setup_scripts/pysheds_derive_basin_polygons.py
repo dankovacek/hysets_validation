@@ -18,21 +18,35 @@ from pysheds.grid import Grid
 
 t0 = time.time()
 
-base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR = os.path.join(BASE_DIR, 'source_data/')
 
-source_data_dir = os.path.join(base_dir, 'source_data/')
-processed_data_dir = os.path.join(base_dir, 'processed_data/')
+# data_dir = '/media/danbot/Samsung_T5/geospatial_data/'
+dem_dir = DATA_DIR + 'dem_data/'
+processed_dem_dir = dem_dir + 'processed_dem/'
 
-data_dir = '/media/danbot/Samsung_T5/geospatial_data/'
-dem_dir = data_dir + 'DEM_data/'
-processed_dem_path = dem_dir + 'processed_dem/'
+# t7_media_path = '/media/danbot/T7 Touch/thesis_data/processed_stations/'
 
-t7_media_path = '/media/danbot/T7 Touch/thesis_data/processed_stations/'
+basin_polygons_path = BASE_DIR + 'processed_data/merged_basin_groups/final_polygons/'
 
-processed_basins_path = '/home/danbot/Documents/code/hysets_validation/processed_data/derived_basins/pysheds/'
+output_basin_polygon_path = BASE_DIR + 'processed_data/processed_basin_polygons/'
 
+hysets_data_path = os.path.join(BASE_DIR, 'source_data/HYSETS_data/')
+hysets_df = pd.read_csv(hysets_data_path + 'HYSETS_watershed_properties.txt', sep=';')
 
-code_dict_path = base_dir + '/validate_hysets/20220211_code_dict.pickle'
+# station_locs = [Point(e[''])]
+
+hysets_nc_path = '/media/danbot/Samsung_T5/geospatial_data/HYSETS_data/'
+foo = rxr.open_rasterio(hysets_nc_path + 'HYSETS_2020_QC_stations.nc')
+print(foo)
+
+print(hysets_df.columns)
+
+hysets_gdf = gpd.GeoDataFrame()
+print(asdfsa)
+
+# maps region codes to 
+code_dict_path = BASE_DIR + '/validate_hysets/20220211_code_dict.pickle'
 with open(code_dict_path, 'rb') as handle:
     code_dict = pickle.load(handle)
 
@@ -98,10 +112,11 @@ def pysheds_basin_polygon(stn, grid, catch, crs, affine, out_path):
         return True
 
 
-def pysheds_delineation(grid, fdir, acc, snap_point_path, threshold):
+def pysheds_delineation(grid, fdir, acc, station, threshold):
 
-    sp = gpd.read_file(snap_point_path, driver='GeoJSON')
-    sp_pt = sp.geometry.values[0]
+    location = hysets_data[hysets_data['OfficialID'] == station]
+
+    sp_pt = location.geometry.values[0]
     x, y = sp_pt.x, sp_pt.y
 
     dirmap = (64, 128, 1, 2, 4, 8, 16, 32)
@@ -140,15 +155,6 @@ def pysheds_condition_dem(grid, dem):
     return inflated_dem
     
 
-# bad stations on low
-# ['07GE001', '07OB001', '07OB003', '09CA003', '08MG021', '08MH141', '08LE075', '09AF001', '10AB003', '10EA002', '08KC003']
-
-# bad stations on med
-# ['07GE001', '07OB001', '07OB003', '09CA003', '08MG021', '08MH141', '08LE075', '09AF001', '10AB003', '10EA002', '08KC003']
-
-# bad stations on hi
-# 
-
 dir_method = 'D8' # D8, DINF
 delineation_method = 'PYSHEDS'
 # for region in code
@@ -156,14 +162,21 @@ region_codes = sorted(list(set(code_dict.values())))
 
 bad_basins = []
 i = 0
-for resolution in ['low', 'med']:
-    for region_code in ['Fraser']:#region_codes:
+
+dem_files = os.listdir(processed_dem_dir)
+
+resolutions = sorted(list(set([e.split('.')[0].split('_')[-1] for e in dem_files])))[::-1]
+
+print(f'  The following DEM resolutions were found and will be used to process basins: {resolutions}')
+
+for resolution in resolutions:
+    for region_code in region_codes:
         # get the covering region for the station
         t_start = time.time()
 
         print(f'Starting analysis on region {region_code} {i}/{len(region_codes)}.')
         # load the region DEM once and iterate through all
-        region_dem_path = os.path.join(processed_dem_path, f'{region_code}_DEM_3005_{resolution}.tif')
+        region_dem_path = os.path.join(processed_dem_dir, f'{region_code}_DEM_3005_{resolution}.tif')
 
         grid = Grid.from_raster(region_dem_path)
 
@@ -183,17 +196,18 @@ for resolution in ['low', 'med']:
         stations = sorted([s for s in list(set(code_dict.keys())) if code_dict[s] == region_code])
 
         j = 0
-        for station in ['08MG026']:#stations:
+        for station in stations:
             if j % 10 == 0:
                 print(f'   Deriving basin for {station} {j}/{len(stations)}')
             # stations in the region to trim the number of redundant file loadings
-            basin_out_path = processed_basins_path + f'{station}_{delineation_method}_basin_derived_{resolution}.geojson'
+            ensure_dir(output_basin_polygon_path)
+            basin_out_path = output_basin_polygon_path + f'{station}_{delineation_method}_basin_derived_{resolution}.geojson'
 
             if not os.path.exists(basin_out_path):
 
-                snap_point_path = f'/media/danbot/Samsung_T5/geospatial_data/WSC_data/reprojected_data/{station}/{station}_pour_point.geojson'
+                # snap_point_path = f'/media/danbot/Samsung_T5/geospatial_data/WSC_data/reprojected_data/{station}/{station}_pour_point.geojson'
 
-                catch = pysheds_delineation(grid, fdir, acc, snap_point_path, acc_threshold)
+                catch = pysheds_delineation(grid, fdir, acc, acc_threshold)
                 
                 basin_created = pysheds_basin_polygon(station, grid, catch, dem_crs, dem_affine, basin_out_path)
                 
