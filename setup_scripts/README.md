@@ -46,15 +46,34 @@ Download Source Data
 ### HYSETS
 
 From the project directory (`hysets_validation/`), create a directory to
-store the HYSETS study data (~ 14.6 GB. *Note: update the filename in
-the unzip command.*):
+store the HYSETS study data. The full repository is ~14.6 GB and can be
+accessed [here](https://osf.io/rpc3w/). However, for validation we only
+need the results file and the basins geometry. The results file is
+included in the repo, and we can access the basin archive file directly
+from Google Drive:
 
 > `mkdir source_data/HYSETS_data/`  
-> `curl -O https://files.osf.io/v1/resources/rpc3w/providers/googledrive/?zip=HYSETS_2020.zip > source_data/HYSETS_data/HYSETS_2020_data.zip`  
-> `unzip HYSETS_2020_data.zip`
+> `curl -O https://files.osf.io/v1/resources/rpc3w/providers/googledrive/?zip=HYSETS_watershed_boundaries.zip > source_data/HYSETS_data/HYSETS_watershed_boundaries.zip`  
+> `unzip HYSETS_watershed_boundaries.zip`
 
 This file is particularly large, so open a second ssh connection and
 continue while this file is downloading.
+
+It appears as though the pour points are not specified for the polygons
+derived for this study, so the station locations have to be derived from
+WSC and USGS data. WSC pour points are provided in the WSC basin data
+that’s [collected in subsequent
+steps](#markdown-header-wsc-hydrometric-station-catchment-polygons-and-metadata),
+and the US-based station locations can be [downloaded from the
+USGS](https://water.usgs.gov/GIS/metadata/usgswrd/XML/streamgages.xml)
+by the following command:
+
+> `curl -O https://water.usgs.gov/GIS/dsdl/USGS_Streamgages-NHD_Locations_Shape.zip > source_data/USGS_Streamgages-NHD_Locations_Shape.zip`  
+> `unzip source_data/HYSETS_data/USGS_Streamgages-NHD_Locations_Shape.zip`
+
+Note that these are station locations and not pour points, but they are
+used by the basin delineation code as a first approximation in a
+“snap-to-nearest” process.
 
 ### DEM Data (from USGS)
 
