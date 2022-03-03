@@ -38,7 +38,7 @@ Activate the virual environment:
 &gt;`source env/bin/activate`
 
 Install Python packages:  
-&gt;`pip install geopandas whitebox shapely rioxarray richdem pysheds`
+&gt;`pip install -r requirements.txt`
 
 Download Source Data
 --------------------
