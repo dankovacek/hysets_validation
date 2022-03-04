@@ -244,7 +244,7 @@ resolutions = sorted(list(set([e.split('.')[0].split('_')[-1] for e in dem_files
 
 print(f'  The following DEM resolutions were found and will be used to process basins: {resolutions}')
 
-for resolution in ['low']:#resolutions:
+for resolution in resolutions:
     for region_code in region_codes:
         # get the covering region for the station
         t_start = time.time()
@@ -254,8 +254,8 @@ for resolution in ['low']:#resolutions:
         # load the region DEM once and iterate through all
         region_dem_path = os.path.join(processed_dem_dir, f'{region_code}_DEM_3005_{resolution}.tif')
 
-        foo = '/media/danbot/Samsung_T5/geospatial_data/DEM_data/processed_dem'
-        region_dem_path = os.path.join(foo, f'{region_code}_DEM_3005_{resolution}.tif')
+        # foo = '/media/danbot/Samsung_T5/geospatial_data/DEM_data/processed_dem'
+        # region_dem_path = os.path.join(foo, f'{region_code}_DEM_3005_{resolution}.tif')
         assert os.path.exists(region_dem_path)
 
         grid = Grid.from_raster(region_dem_path)
