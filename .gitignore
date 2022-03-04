@@ -14,6 +14,7 @@ processed_data/superseded/
 processed_data/*.geojson
 
 source_data/NHN_data/*.zip
+source_data/NHN_feature_data/*.zip
 source_data/dem_data/dem_files/*.tif
 source_data/AK_Coastline
 source_data/BC_Coastline
@@ -30,6 +31,8 @@ setup_scripts/superseded/
 
 validate_hysets/test_burn/
 validate_hysets/*.geojson
+
+env/
 
 *-draft.md
 *.ods

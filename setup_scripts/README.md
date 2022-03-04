@@ -17,7 +17,7 @@ for 128 GB RAM, 12 core processor.)
 > `sudo apt-get update`
 
 Install software utilities:
-&gt;`sudo apt-get install libgdal-dev gdal-bin libproj15 libproj19 libproj-dev openmpi-bin libopenmpi-dev libboost-iostreams-dev parallel unzip dos2unix`
+&gt;`sudo apt-get install libgdal-dev gdal-bin libproj15 libproj19 libproj-dev openmpi-bin libopenmpi-dev libboost-iostreams-dev parallel unzip dos2unix zip`
 
 **Clone the repository (from the root directory)**
 
@@ -53,12 +53,13 @@ included in the repo, and we can access the basin archive file directly
 from Google Drive:
 
 > `mkdir source_data/HYSETS_data/` `cd source_data/HYSETS_data/`  
-> `curl -O https://files.osf.io/v1/resources/rpc3w/providers/googledrive/?zip=HYSETS_watershed_boundaries.zip > HYSETS_watershed_boundaries.zip`  
+> `curl -O https://files.osf.io/v1/resources/rpc3w/providers/googledrive/?zip=HYSETS_watershed_boundaries.zip`  
 > `mkdir USGS_basins/`  
 > `unzip HYSETS_watershed_boundaries.zip -d USGS_basins/`
 
-This file is particularly large, so open a second ssh connection and
-continue while this file is downloading.
+This file (~15GB) could take 15-20 minutes on it’s own to download, so
+open a second ssh connection and continue the setup process while this
+file is downloading.
 
 It appears as though the pour points are not specified for the polygons
 derived for this study, so the station locations have to be derived from
@@ -95,7 +96,7 @@ a list of DEM files corresponding to the layers of interest.
 Make two source directories for DEM data and raw files. At the root
 directory level:
 
-> `cd hysets_validation/source_data`
+> `cd hysets_validation/source_data`  
 > `mkdir dem_data/ dem_data/dem_files`
 
 The custom file lists I generated for BC/AK/WA are provided in the
@@ -107,7 +108,7 @@ filenames into a single file:
 > `cat 1-1arcsecond-PNW-files.txt 2-2arcsecond-files.txt > merged-files.txt`
 
 You’ll likely have a carriage return added to urls (%0D) that needs to
-be removed (Windows issue that seems to pop up in cloud instance):
+be removed (Windows issue that seems to pop up in cloud instance):  
 &gt;`dos2unix merged-files.txt`
 
 and download files in parallel (~ 18GB total. Check what folder you are
@@ -209,23 +210,25 @@ read zip files of polygons:
 > `for dir in */; do mkdir -- "$dir"{basin,pour_point,station}; done`  
 > `for dir in */; do mv "$dir"/*DrainageBasin* "$dir"/basin; done`  
 > `for dir in */; do mv "$dir"/*PourPoint* "$dir"/pour_point; done`  
-> `for dir in */; do mv "$dir"/*Station* "$dir"/station`
+> `for dir in */; do mv "$dir"/*Station* "$dir"/station; done`
 
-Clean up the files: &gt;`rm -r WSC_Basins.gdb *.qgz *.zip`
+Clean up the files: &gt;`rm *.qgz *.zip`
 
-The file containing currently publicly available WSC station basin
-polygons can be retrieved by the command below. The collection is less
-complete than the set available above, however the set above is not
-finalized/approved and is subject to revision.
+<!-- The file containing currently publicly available WSC station basin polygons can be retrieved by the command below.  The collection is less complete than the set available above, however the set above is not finalized/approved and is subject to revision.
 
-> `wget -P source_data/WSC_data/  https://donnees.ec.gc.ca/data/water/products/national-hydrometric-network-basin-polygons/WSC_Basins.gdb.zip`  
-> `unzip WSC_Basins.gdb.zip`
+>`wget -P source_data/WSC_data/  https://donnees.ec.gc.ca/data/water/products/national-hydrometric-network-basin-polygons/WSC_Basins.gdb.zip`  
+>`unzip WSC_Basins.gdb.zip` -->
 
 Create geojson objects as separate data structures of all basins:
+&gt;`cd ~/hysets_validation/setup_scripts/`
 &gt;`python process_wsc_basins.py`
 
 Merge Stream Vectors for Burning
 --------------------------------
+
+**Optional**: if you want to re-derive basin groups, you can run the
+script below, otherwise, the polygons describing the study region are
+provided in the folder `processed_data/merged_basin_groups`.
 
 Use the WSC SDA ids to group NHN features into the same polygons as used
 in the regional groupings. In each NHN vector file
@@ -236,7 +239,7 @@ sub-subbasins were grouped above, use the same procedure to group the
 stream vectors and save them as separate files. These will be used in
 the FillBurn processing step for dem conditioning.
 
-> `python group_stream_vectors.py`
+> `python group_stream_vectors.py` (**optional**)
 
 **GLHYMPHS**
 
@@ -251,6 +254,13 @@ and transfer to the data drive (~1.1 GB):
 
 > `https://dataverse.scholarsportal.info/dataset.xhtml?persistentId=doi:10.5683/SP2/DLGXYO`
 
+The file is called something like `GLHYMPS.zip` and you can transfer it
+from your **local machine** to your cloud instance using `scp`:  
+&gt;`scp /local/path/GLHYMPS.zip root@<cloud-ip-address>:/hysets_validation/source_data/`
+
+Then unzip the file on the remote machine:  
+&gt;`unzip GLHYMPS.zip`
+
 **NALCMS**
 
 Land use percentages (forest, grassland, crops, etc.) is derived from
@@ -259,7 +269,7 @@ the North American Land Change Monitoring System:
 > `cd source_data/`  
 > `mkdir NALCMS_data/`  
 > `cd NALCMS_data/`  
-> `wget http://www.cec.org/wp-content/uploads/wpallimport/files/Atlas/Files/2010nalcms30m/north_america_2010.zip`  
+> `wget http://www.cec.org/wp-content/uploads/wpallimport/files/Atlas/Files/2010nalcms30m/north_america_2010.zip > north_america_2010.zip`  
 > `unzip north_america_2020.zip -d .`
 
 Basin Delineation and Attribute Validation
@@ -268,20 +278,22 @@ Basin Delineation and Attribute Validation
 This step represents the heavy lifting where large regions of DEM such
 as the Liard, Peace, and and Fraser River basins are processed into flow
 direction and flow accumulation at the highest available resolution.
+Three tools were evaluated for the step of validating HYSETS basins:
+[Whiteboxtools](python%20process_dem_by_basin.py),
+[RichDEM](https://richdem.readthedocs.io/en/latest/), and
+[Pysheds](https://mattbartos.com/pysheds/). Each have distinct feature
+sets, but Pysheds was used here for the step of delineating a large set
+of basins.
 
-> `python process_dem_by_basin.py`
-
-Note: the breach [depression
-function](https://jblindsay.github.io/ghrg/Whitebox/Help/BreachDepressions.html)
-run on the DEM is a bottleneck step.
+<!-- Note: the breach [depression function](https://jblindsay.github.io/ghrg/Whitebox/Help/BreachDepressions.html) run on the DEM is a bottleneck step.   -->
 
 The final step is to validate the basin attributes derived in HYSETS (or
 other dataset) using the set of stations whose catchment boundaries
 intersect BC. The manual basin delineation step is the most
 computationally intensive step of the validation process, and it’s
-executed with the script `derive_basin_polygons.py`
+executed with the script `pysheds_derive_basin_polygons.py`
 
-> `python derive_basin_polygons.py`
+> `python pysheds_derive_basin_polygons.py`
 
 GeoBC Digital Road Atlas
 ------------------------

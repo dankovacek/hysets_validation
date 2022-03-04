@@ -39,7 +39,8 @@ def fill_holes(data):
         print(f'  ...no gaps found in {group_name}')
         return data.geometry.values[0]
 
-nhn_path = '/media/danbot/Samsung_T5/geospatial_data/WSC_data/NHN_feature_data/'
+# nhn_path = '/media/danbot/Samsung_T5/geospatial_data/WSC_data/NHN_feature_data/'
+nhn_path = 
 
 bc_groups_path = '../processed_data/merged_basin_groups/'
 
