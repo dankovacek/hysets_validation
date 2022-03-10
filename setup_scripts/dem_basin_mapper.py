@@ -18,34 +18,37 @@ from shapely.geometry import Polygon
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, 'processed_data/')
 
-
 mask_dir = DATA_DIR + f'merged_basin_groups/split_groups/'
+
+dem_dir = os.path.join(BASE_DIR, f'source_data/dem_data/')
+# dem_dir = '/media/danbot/Samsung_T5/geospatial_data/DEM_data/'
 
 t0 = time.time()
 
-dem_dir = os.path.join(BASE_DIR, 'source_data/dem_data/')
-# dem_dir = '/media/danbot/Samsung_T5/geospatial_data/DEM_data/'
+# specify the DEM source
+# either 'EarthEnv_DEM90' or 'USGS_3DEP'
+DEM_source = 'EarthEnv_DEM90'
+
+if DEM_source == 'EarthEnv_DEM90': 
+    vrt_file = 'EENV_DEM_mosaic_4326.vrt'
+else:
+    vrt_file = 'BC_DEM_mosaic_4326.vrt'
+
+dem_mosaic_file = os.path.join(dem_dir, vrt_file)
 
 bc_region_final_polygons_folder = DATA_DIR + 'merged_basin_groups/final_polygons/'
-# bc_basins = gpd.read_file(bc_basins_file)
-# bc_basins['Area_km2'] = bc_basins.geometry.area / 1E6
-# bc_basins.reset_index(inplace=True)
-# bc_basins = bc_basins.sort_values('Area_km2')
-# bc_basins.reset_index(inplace=True, drop=True)
-# basins_crs = bc_basins.crs
-
-dem_mosaic_file = dem_dir + 'BC_DEM_mosaic_4326.vrt'
 
 # coastline_path = '/home/danbot/Documents/code/hysets_validation/source_data/'
 # bc_coast = gpd.read_file(coastline_path + 'BC_Coastline/FWA_COASTLINES_SP.geojson')
 # create boolean variable if the linestring is a closed loop or not
 # bc_coast['is_ring'] = bc_coast.geometry.is_ring
-coast_groups = [
-    '08A', '08B', '08C', '08D',
-    '08F', '08G', '08H', '08O', 
-    ]
+# coast_groups = [
+#     '08A', '08B', '08C', '08D',
+#     '08F', '08G', '08H', '08O', 
+#     ]
 
 save_path = dem_dir + 'processed_dem/'
+# save_path = '/media/danbot/Samsung_T5/geospatial_data/DEM_data/processed_dem/'
 
 
 if not os.path.exists(save_path):
@@ -58,24 +61,26 @@ def get_crs_and_resolution(fname):
     res = raster.rio.resolution()   
     return crs, res
 
+# the code below was used to trim the group polygons 
+# along coast lines (littoral).  This has been skipped.
 
-def filter_polygons_by_elevation(grp_code, area_polygons):
-    dem_file = dem_dir + f'processed_dem/{grp_code}_DEM_3005_hi.tif'
-    dem = rxr.open_rasterio(dem_file)
-    raster_crs = dem.rio.crs.to_epsg()
-    raster_nodata = dem.rio.nodata
+# def filter_polygons_by_elevation(grp_code, area_polygons):
+#     dem_file = dem_dir + f'processed_dem/{grp_code}_DEM_3005_hi.tif'
+#     dem = rxr.open_rasterio(dem_file)
+#     raster_crs = dem.rio.crs.to_epsg()
+#     raster_nodata = dem.rio.nodata
 
-    area_polygons = area_polygons.to_crs(raster_crs)
+#     area_polygons = area_polygons.to_crs(raster_crs)
     
-    min_elevation = -1E6
-    for p in area_polygons.values:
-        with rasterio.open(dem_file) as src:
-            out_image, out_transform = rasterio.mask.mask(src, [p], crop=True)
-            out_image = out_image[out_image != raster_nodata]
-            mean_elevation = np.nanmean(out_image[0])
-            if mean_elevation > min_elevation:
-                polygon_to_keep = p
-    return polygon_to_keep, raster_crs
+#     min_elevation = -1E6
+#     for p in area_polygons.values:
+#         with rasterio.open(dem_file) as src:
+#             out_image, out_transform = rasterio.mask.mask(src, [p], crop=True)
+#             out_image = out_image[out_image != raster_nodata]
+#             mean_elevation = np.nanmean(out_image[0])
+#             if mean_elevation > min_elevation:
+#                 polygon_to_keep = p
+#     return polygon_to_keep, raster_crs
                 
 
 # def trim_raster_mask_polygon(grp_code):
@@ -203,10 +208,10 @@ for file in all_masks:
 
     mask_check = check_mask_validity(fpath)
     
-    for res in ['res8', 'res4', 'res2', 'res1']:
+    for res in ['res1']:#['res8', 'res4', 'res2', 'res1']:
         # set the output initial path and reprojected path
-        out_path = f'{save_path}{grp_code}_DEM_4326_{res}.tif'
-        out_path_reprojected = f'{save_path}{grp_code}_DEM_3005_{res}.tif'
+        out_path = f'{save_path}{grp_code}_{DEM_source}_4326_{res}.tif'
+        out_path_reprojected = f'{save_path}{grp_code}_{DEM_source}_3005_{res}.tif'
 
         if res == 'res8':
             rfactor = 8
@@ -217,12 +222,15 @@ for file in all_masks:
         else:
             rfactor = 1
 
-        trw = round(abs(w_res*rfactor), 4)
-        trh = round(abs(h_res*rfactor), 4)
+        trw = abs(w_res*rfactor)
+        trh = abs(h_res*rfactor)
 
         if not os.path.exists(out_path_reprojected):
 
-            command = f'gdalwarp -s_srs epsg:4326 -cutline {fpath} -cl {named_layer} -crop_to_cutline -tr {trw} {trh} -multi -of gtiff {dem_mosaic_file} {out_path} -wo NUM_THREADS=ALL_CPUS'
+            if rfactor == 1:
+                command = f'gdalwarp -s_srs epsg:4269 -cutline {fpath} -cl {named_layer} -crop_to_cutline -multi -of gtiff {dem_mosaic_file} {out_path} -wo NUM_THREADS=ALL_CPUS'
+            else:
+                command = f'gdalwarp -s_srs epsg:4326 -cutline {fpath} -cl {named_layer} -crop_to_cutline -tr {trw} {trh} -multi -of gtiff {dem_mosaic_file} {out_path} -wo NUM_THREADS=ALL_CPUS'
             print('')
             print('__________________')
             print(command)
