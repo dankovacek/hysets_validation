@@ -22,6 +22,7 @@ source_data/BC_Coastline/
 source_data/BC_Coastline/*
 source_data/BC_Coastline/FWA_COASTLINES_SP.geojson
 source_data/dem_data
+source_data/WSC_data/WSC_basin_polygons/
 references/
 validate_hysets/results/*.csv
 validate_hysets/results/*.pickle
