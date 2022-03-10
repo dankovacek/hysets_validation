@@ -28,31 +28,26 @@ DATA_DIR = os.path.join(BASE_DIR, 'source_data/')
 dem_dir = DATA_DIR + 'dem_data/'
 processed_dem_dir = dem_dir + 'processed_dem/'
 
+# specify the DEM source
+# either 'EarthEnv_DEM90' or 'USGS_3DEP'
+DEM_source = 'EarthEnv_DEM90'
+
 # t7_media_path = '/media/danbot/T7 Touch/thesis_data/processed_stations/'
 
-basin_polygons_path = BASE_DIR + '/processed_data/merged_basin_groups/final_polygons/'
 
 output_basin_polygon_path = BASE_DIR + '/processed_data/processed_basin_polygons/'
 
 hysets_data_path = os.path.join(BASE_DIR, 'source_data/HYSETS_data/')
 hysets_df = pd.read_csv(hysets_data_path + '/HYSETS_watershed_properties.txt', sep=';')
 
-USGS_stn_locs_path = hysets_data_path + '/USGS_station_locations/'
+USGS_stn_locs_path = hysets_data_path + 'USGS_station_locations/'
 usgs_df = gpd.read_file(USGS_stn_locs_path, layer='USGS_Streamgages-NHD_Locations')
 
 usgs_df = usgs_df.to_crs(3005)
 usgs_df['Official_ID'] = usgs_df['SITE_NO']
 
-# wsc_path = os.path.join(BASE_DIR, 'source_data/WSC_data')
-# wsc_pp_geom_base = wsc_path + 'all/'
-# print(wsc_pp_geom_base)
-
-wsc_df = pd.read_csv(os.path.join(BASE_DIR, 'source_data/WSC_Stations_2020.csv'))
-wsc_locs = [Point(x, y) for x, y in zip(wsc_df['Longitude'].values, wsc_df['Latitude'])]
-wsc_df = gpd.GeoDataFrame(wsc_df, geometry=wsc_locs, crs='EPSG:4269')
-wsc_df = wsc_df.to_crs(3005)
-wsc_stations = wsc_df['Station Number'].values
-wsc_df['Official_ID'] = wsc_df['Station Number']
+wsc_path = os.path.join(BASE_DIR, 'source_data/WSC_data/WSC_basin_polygons')
+wsc_stns = os.listdir(wsc_path)
 
 
 hysets_df = pd.read_csv(os.path.join(BASE_DIR, 'source_data/HYSETS_data/HYSETS_watershed_properties.txt'), sep=';')
@@ -60,15 +55,6 @@ hysets_df = pd.read_csv(os.path.join(BASE_DIR, 'source_data/HYSETS_data/HYSETS_w
 hysets_locs = [Point(x, y) for x, y in zip(hysets_df['Centroid_Lon_deg_E'].values, hysets_df['Centroid_Lat_deg_N'])]
 hysets_df = gpd.GeoDataFrame(hysets_df, geometry=hysets_locs, crs='EPSG:4269')
 hysets_df = hysets_df.to_crs(3005)
-
-combined_df = pd.concat([wsc_df[['Official_ID', 'geometry']], hysets_df[['Official_ID', 'geometry']]], join='outer', ignore_index=True)
-
-# drop duplicates, but keep the first station polygon
-combined_df.drop_duplicates(subset='Official_ID', keep='first', inplace=True, ignore_index=True)
-
-stn_loc_df = pd.concat([wsc_df[['Official_ID', 'geometry']], usgs_df[['Official_ID', 'geometry']]], join='outer', ignore_index=True)
-
-stn_loc_df = stn_loc_df[stn_loc_df['Official_ID'].isin(hysets_df['Official_ID'].values)]
 
 
 def get_grp_polygon(basin_polygons_path, polygon_fnames, grp_code):
@@ -79,48 +65,18 @@ def get_grp_polygon(basin_polygons_path, polygon_fnames, grp_code):
     grp_polygon = grp_polygon.dissolve(by='grp', aggfunc='sum')
     return grp_polygon
 
-# get all the stations that fall within the study area
-def map_stations_to_basin_groups(nhn_group_polygon_path):    
 
-    # create a dict to organize stations by their location in the regional groupings
-    region_dict = {}
-    regional_group_polygon_fnames = os.listdir(nhn_group_polygon_path)
-    code_dict = {}
-    for fname in regional_group_polygon_fnames:
-        grp_code = fname.split('_')[0]
-        print(f'  Finding HYSETS stations within {grp_code}.')
-        grp_polygon = get_grp_polygon(basin_polygons_path, regional_group_polygon_fnames, grp_code)
 
-        intersecting_pts = gpd.sjoin(stn_loc_df, grp_polygon, how='inner', predicate='intersects')
-        station_IDs = list(intersecting_pts['Official_ID'].values)
-        region_dict[grp_code] = station_IDs
-        # stations must also be in wsc basin list
-        missing_stns = [e for e in station_IDs if e not in wsc_stations]
-        if len(missing_stns) > 0:
-            print(f'   {missing_stns} are included in the HYSETS database but are not found in the WSC station list.')
-
-        for stn in station_IDs:
-            if stn in code_dict.keys():
-                print(f'  for some reason, {stn} is already in code_dict...')
-                print(f'    under {grp_code}, code_dict[stn] = {code_dict[stn]}')
-            code_dict[stn] = grp_code
-            
-    return code_dict
-
+# create a dictionary where the key: value pairs 
+# map stations to the regional group name
 stn_mapper_path = os.path.join(BASE_DIR, 'processed_data/')
 mapper_dict_file = 'station_to_region_mapper.pickle'
-if not os.path.exists(stn_mapper_path):
-    os.mkdir(stn_mapper_path)
 
-existing_mappers = os.listdir(stn_mapper_path)
-if mapper_dict_file not in existing_mappers:
-    code_dict = map_stations_to_basin_groups(basin_polygons_path)
-    with open(stn_mapper_path + mapper_dict_file, 'wb') as handle:
-        pickle.dump(code_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
-else:
-    with open(stn_mapper_path + mapper_dict_file, 'rb') as handle:
-        code_dict = pickle.load(handle)
-
+if not os.path.exists(os.path.join(stn_mapper_path, mapper_dict_file)):
+    raise Exception; '  Mapper file doesnt exist.  You need to first run process_hydrologic_regions.py'
+    
+with open(stn_mapper_path + mapper_dict_file, 'rb') as handle:
+    code_dict = pickle.load(handle)
 
 def ensure_dir(file_path):
     directory = os.path.dirname(file_path)
@@ -150,11 +106,12 @@ def fill_holes(data):
         # print(f'   ...{len(interior_gaps)} gaps found in {group_name} groupings.')
         for i in interior_gaps:
             gap_list.append(Polygon(i))
+
         data_gaps = gpd.GeoDataFrame(geometry=gap_list, crs=data.crs)
-        
         appended_set = pd.concat([data, data_gaps])
         appended_set['group'] = 0
         merged_polygon = appended_set.dissolve(by='group')
+
         return merged_polygon.geometry.values[0]
     else:
         # print(f'  ...no gaps found in {group_name}')
@@ -185,10 +142,20 @@ def pysheds_basin_polygon(stn, grid, catch, crs, affine, out_path):
 
 def pysheds_delineation(grid, fdir, acc, station, threshold):
 
-    location = stn_loc_df[stn_loc_df['Official_ID'] == station]
-
-    sp_pt = location.geometry.values[0]
-    x, y = sp_pt.x, sp_pt.y
+    if station not in os.listdir(wsc_path):
+        print(f'    {station} not found in WSC directory.  Revert to HYSETS location.')
+        location = hysets_df[hysets_df['Official_ID'] == station]
+        sp_pt = location.geometry.values[0]
+        x, y = sp_pt.x, sp_pt.y
+    else:
+        # retrieve the pour point
+        print(f'   {station} found in WSC directory, using published pour point.')
+        pp_loc = os.path.join(wsc_path, f'{station}/PourPoint/')
+        layer_name = f'{station}_PourPoint_PointExutoire'
+        pp_gdf = gpd.read_file(pp_loc, layer=layer_name)
+        pp_gdf = pp_gdf.to_crs(3005)
+        ppt = pp_gdf.geometry.values[0]
+        x, y = ppt.x, ppt.y
 
     dirmap = (64, 128, 1, 2, 4, 8, 16, 32)
 
@@ -199,7 +166,7 @@ def pysheds_delineation(grid, fdir, acc, station, threshold):
 
     print(f'   ...difference btwn. nearest and PYSHEDS snap = {distance:1f}')
     snapped_loc = Point(x_snap, y_snap)
-    snapped_loc_gdf = gpd.GeoDataFrame(geometry=[snapped_loc], crs=stn_loc_df.crs)
+    snapped_loc_gdf = gpd.GeoDataFrame(geometry=[snapped_loc], crs=hysets_df.crs)
     snapped_loc_gdf.to_file(os.path.join(stn_mapper_path, 'snapped_locations'))
 
     # Delineate the catchment
@@ -252,7 +219,7 @@ for resolution in resolutions:
         print(f'Starting analysis on region {region_code} {i}/{len(region_codes)}.')
         
         # load the region DEM once and iterate through all
-        region_dem_path = os.path.join(processed_dem_dir, f'{region_code}_DEM_3005_{resolution}.tif')
+        region_dem_path = os.path.join(processed_dem_dir, f'{region_code}_{DEM_source}_3005_{resolution}.tif')
 
         # foo = '/media/danbot/Samsung_T5/geospatial_data/DEM_data/processed_dem'
         # region_dem_path = os.path.join(foo, f'{region_code}_DEM_3005_{resolution}.tif')
