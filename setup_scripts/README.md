@@ -133,12 +133,12 @@ set, the default will be EPSG 4269 which doesn’t appear to be correct.
 Setting 4326 appears to produce properly aligned geometry. The resulting
 .vrt should look as follows:
 
-![DEM Mosaic of BC from 3DEP](../images/BC_dem_raw.png)
+![DEM Mosaic of BC from 3DEP](img/BC_dem_raw.png)
 
 ### National Hydrographic Network (NHN)
 
 ![Regions of the National Hydrographic
-Network](../images/nhn_regions_full.png)
+Network](img/nhn_regions_full.png)
 
 The [national blue-line
 network](https://open.canada.ca/data/en/dataset/a4b190fe-e090-4e6d-881e-b87956c07977)

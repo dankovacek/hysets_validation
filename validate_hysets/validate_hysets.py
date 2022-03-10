@@ -60,7 +60,8 @@ nalcms_fpath = data_dir + 'NALCMS_NA_2010/NA_NALCMS_2010_v2_land_cover_30m/' + '
 
 # where to save results of validation
 processed_data_output_path = '/media/danbot/T7 Touch/thesis_data/processed_stations/'
-processed_polygons_out_path = '/home/danbot/Documents/code/hysets_validation/processed_data/derived_basins/'
+# processed_polygons_out_path = '/home/danbot/Documents/code/hysets_validation/processed_data/derived_basins/'
+processed_polygon_path = '/media/danbot/T7 Touch/thesis_data/processed_stations/'
 
 wsc_df = pd.read_csv(hydat_dir + 'hydrometric_StationList_2021-07.csv')
 wsc_df.columns = [e.strip() for e in wsc_df.columns]
@@ -106,6 +107,7 @@ nalcms_raster, nalcms_crs, nalcms_affine = retrieve_raster(nalcms_fpath)
 t_nal = time.time()
 print(f"    ......NALCMS data loaded in {t_nal - t_hs:.1f}")
 
+data_folder = processed_data_output_path
 with open('20220211_code_dict.pickle', 'rb') as handle:
     code_dict = pickle.load(handle)
 
@@ -262,7 +264,8 @@ def calculate_slope_and_aspect(clipped_raster):
 
 def retrieve_basin_polygon(basin_polygon_source, station, resolution):
     if basin_polygon_source == 'manual':
-        basin_polygon_path = processed_polygons_out_path + 'pysheds/' + f'{station}_PYSHEDS_basin_derived_{resolution}.geojson'
+        # basin_polygon_path = processed_polygons_out_path + 'pysheds/' + f'{station}_PYSHEDS_basin_derived_{resolution}.geojson'
+        basin_polygon_path = processed_polygon_path + f'{station}_PYSHEDS_basin_derived_{resolution}.geojson'
         if not os.path.exists(basin_polygon_path):
             raise Exception; f'{basin_polygon_path} does not exist.'
         else:
@@ -322,7 +325,7 @@ region_codes = sorted(list(set(code_dict.values())))
 
 errors = {}
 t_start = time.time()
-for res in ['hi']:#, 'med', 'hi']:
+for res in ['res8', 'res4', 'res2', 'res1']:#, 'med', 'hi']:
     for polygon_source in ['manual', 'hysets']:
         all_dfs = []
         for region in region_codes:
@@ -361,7 +364,7 @@ for res in ['hi']:#, 'med', 'hi']:
         if len(all_dfs) > 0:
             results = pd.concat(all_dfs, axis=0, ignore_index=True)
             results = results.sort_values(by='OfficialID')
-            results.to_csv(root_path + f'{polygon_source}_basin_characteristics_{res}res.csv')
+            results.to_csv(root_path + f'{polygon_source}_basin_characteristics_{res}.csv')
         else:
             print('    No results returned.  Something real bad happened.')
         print(results.head())
