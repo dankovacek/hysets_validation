@@ -10,9 +10,9 @@ from functools import partial
 
 # import multiprocessing
 
-from multiprocessing import Pool, cpu_count
+from multiprocessing import Pool
 
-from numba import prange, jit
+# from numba import prange, jit
 
 # import richdem as rd
 
@@ -469,9 +469,7 @@ for region_code in ['08P']:# region_codes:
 
     output_paths = [os.path.join(output_basin_polygon_path, f'{s}_{DEM_source}_basin.geojson') for s in stations]
 
-    n_cores = cpu_count()
-
-    pl = Pool(processes=int(n_cores-1))
+    pl = Pool()
     basin_results = pl.map(derive_basin, output_paths)
     pl.close()
     
