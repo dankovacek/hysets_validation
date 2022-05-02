@@ -31,12 +31,12 @@ download_path = 'https://water.usgs.gov/GIS/dsdl/'
 download_path = 'https://files.osf.io/v1/resources/rpc3w/providers/dropbox/'
 basin_filename = 'HYSETS_watershed_boundaries.zip'
 # command = f'wget {download_path}{basin_filename} -O {HYSETS_DIR}/{basin_filename}'
-command = f'wget {download_path}{basin_filename} -d {HYSETS_DIR}/'
+command = f'wget {download_path}{basin_filename} -O {HYSETS_DIR}/{basin_filename}'
 save_path = f'{BASIN_DIR}/{basin_filename}'
 if not os.path.exists(save_path):
     print(f'    ...downloading file {basin_filename} from {download_path}')
     os.system(command)
 
 os.system(f'unzip {HYSETS_DIR}/{basin_filename} -d {BASIN_DIR}')
-# os.remove(f'{HYSETS_DIR}/{basin_filename}')
+os.remove(f'{HYSETS_DIR}/{basin_filename}')
 
