@@ -236,7 +236,7 @@ def map_stations_to_basin_groups(nhn_group_polygon_path):
     region_dict = {}
     regional_group_polygon_fnames = os.listdir(nhn_group_polygon_path)
     code_dict = {}
-    for fname in regional_group_polygon_fnames:
+    for fname in regional_group_polygon_fnames[:2]:
         grp_code = fname.split('_')[0]
         print(f'  Finding HYSETS stations within {grp_code}.')
         grp_polygon = get_grp_polygon(basin_polygons_path, regional_group_polygon_fnames, grp_code)
@@ -258,14 +258,17 @@ mapper_dict_file = 'station_to_region_mapper.json'
 if not os.path.exists(stn_mapper_path):
     os.mkdir(stn_mapper_path)
 
+mapper_filepath = stn_mapper_path + mapper_dict_file
 
 existing_mappers = os.listdir(stn_mapper_path)
 if not os.path.exists(os.path.join(stn_mapper_path, mapper_dict_file)):
     print('Creating station to region mapping object.')
     code_dict = map_stations_to_basin_groups(basin_polygons_path)
-    filepath = stn_mapper_path + mapper_dict_file
-    with open(filepath, 'w') as fp:
-        json.dumps(code_dict, fp)
+    json_string = json.dumps(code_dict)
+    with open(mapper_filepath, 'w') as fp:
+        json.dump(json_string, fp)
+
+
 else:
     print('  Mapper dict already created.')
     # for reg, stns in code_dict.items():

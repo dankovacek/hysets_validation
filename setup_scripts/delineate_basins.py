@@ -108,7 +108,9 @@ if not os.path.exists(os.path.join(stn_mapper_path, mapper_dict_file)):
 
 # with open(stn_mapper_path + mapper_dict_file, 'rb') as handle:
 #     code_dict = np.load(handle)
-code_dict = json.loads(stn_mapper_path + mapper_dict_file)
+json_filepath = stn_mapper_path + mapper_dict_file
+with open(json_filepath) as json_file:
+    code_dict = json.load(json_file)
 
 def ensure_dir(file_path):
     directory = os.path.dirname(file_path)
