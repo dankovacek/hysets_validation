@@ -265,7 +265,7 @@ if not os.path.exists(os.path.join(stn_mapper_path, mapper_dict_file)):
     code_dict = map_stations_to_basin_groups(basin_polygons_path)
     filepath = stn_mapper_path + mapper_dict_file
     with open(filepath, 'w') as fp:
-        json.dump(code_dict, fp)
+        json.dumps(code_dict, fp)
 else:
     print('  Mapper dict already created.')
     # for reg, stns in code_dict.items():
