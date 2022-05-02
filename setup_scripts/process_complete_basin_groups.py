@@ -236,7 +236,7 @@ def map_stations_to_basin_groups(nhn_group_polygon_path):
     region_dict = {}
     regional_group_polygon_fnames = os.listdir(nhn_group_polygon_path)
     code_dict = {}
-    for fname in regional_group_polygon_fnames[:2]:
+    for fname in regional_group_polygon_fnames:
         grp_code = fname.split('_')[0]
         print(f'  Finding HYSETS stations within {grp_code}.')
         grp_polygon = get_grp_polygon(basin_polygons_path, regional_group_polygon_fnames, grp_code)
