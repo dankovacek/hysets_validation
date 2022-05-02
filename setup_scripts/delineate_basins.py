@@ -99,15 +99,19 @@ def get_grp_polygon(basin_polygons_path, polygon_fnames, grp_code):
 # create a dictionary where the key: value pairs 
 # map stations to the regional group name
 stn_mapper_path = os.path.join(BASE_DIR, 'processed_data/')
-mapper_dict_file = 'station_to_region_mapper.pickle'
+mapper_dict_file = 'station_to_region_mapper.npy'
 
 
 if not os.path.exists(os.path.join(stn_mapper_path, mapper_dict_file)):
     raise Exception; '  Mapper file not found.  You need to first run process_hydrologic_regions.py'
-    
+   
 
-with open(stn_mapper_path + mapper_dict_file, 'rb') as handle:
-    code_dict = pickle.load(handle)
+# with open(stn_mapper_path + mapper_dict_file, 'rb') as handle:
+#     code_dict = np.load(handle)
+code_dict = np.load(stn_mapper_path + mapper_dict_file)
+
+print(code_dict)
+print(asdf)
 
 def ensure_dir(file_path):
     directory = os.path.dirname(file_path)
@@ -344,7 +348,6 @@ def find_pour_point(acc, station, baseline_DA, raster_res, snap_method):
     return distance, pour_point
 
 
-
 def check_for_baseline_drainage_area(stn):
     data = hysets_df[hysets_df['Official_ID'] == stn]
     area = data['Drainage_Area_km2'].values[0]
@@ -392,7 +395,7 @@ resolution = 'res1'
 
 # '09A', '08F'
 #
-for region_code in ['08P', '07O', '07G', '08O', '07U', '08G', '08H', '08E', '08A', '08D']:#region_codes:
+for region_code in region_codes:
     # get the covering region for the station
     i += 1
     t_start = time.time()
@@ -452,7 +455,7 @@ for region_code in ['08P', '07O', '07G', '08O', '07U', '08G', '08H', '08E', '08A
     
     t_end_cond = time.time()
     t_cond = t_end_cond - t_start
-    print(f'    ...completed conditioning, flow direction, and flow accumulation for {region_code} in {t_cond:.1f}.')
+    print(f'    ...completed conditioning, flow direction, and flow accumulation for {region_code} in {t_cond:.1f}s.')
     
     # dem_raster, dem_crs, dem_affine = retrieve_raster(region_dem_path)
 
