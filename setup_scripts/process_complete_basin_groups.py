@@ -118,10 +118,10 @@ def download_SEAK_streams_feature_data():
         p.map(download_files, dl_input)
 
 
-# download_SEAK_streams_feature_data()
+download_SEAK_streams_feature_data()
 print(f'   ...South East Alaska hydrologic feature files downloaded successfully.')
 
-# download_NHN_hydrologic_feature_data(bc_polygons)
+download_NHN_hydrologic_feature_data(bc_polygons)
 print(f'   ...BC hydrologic feature files downloaded successfully.')
 
 # def fill_holes(data):           
