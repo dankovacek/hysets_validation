@@ -28,7 +28,7 @@ download_path = 'https://water.usgs.gov/GIS/dsdl/'
 
 # get the very large file containing basin polygons
 download_path = 'https://files.osf.io/v1/resources/rpc3w/providers/googledrive/?zip='
-basin_filename = 'HYSETS_watershed_boundaries.zip'
+basin_filename = 'HYSETS_watershed_boundaries'
 command = f'wget {download_path}{basin_filename} -O {HYSETS_DIR}/{basin_filename}'
 save_path = f'{BASIN_DIR}/{basin_filename}'
 if not os.path.exists(save_path):
