@@ -12,7 +12,7 @@ import numpy as np
 
 # from functools import partial
 
-# import multiprocessing
+import multiprocessing
 
 from multiprocessing import Pool
 
@@ -402,7 +402,7 @@ resolution = 'res1'
 
 # '09A', '08F'
 #
-for region_code in ['08P']:# region_codes:
+for region_code in region_codes:
     # get the covering region for the station
     i += 1
     t_start = time.time()
@@ -473,16 +473,18 @@ for region_code in ['08P']:# region_codes:
 
     output_paths = [os.path.join(output_basin_polygon_path, f'{s}_{DEM_source}_basin.geojson') for s in stations]
 
+    n_cpus = multiprocessing.cpu_count()
+
     futures = []
     basin_results = []
-    for p in output_paths:
-        with ThreadPoolExecutor(max_workers=10) as executor:
-            for op in output_paths:
-                futures.append(executor.submit(derive_basin, op))
+    
+    with ThreadPoolExecutor(max_workers=n_cpus) as executor:
+        for op in output_paths:
+            futures.append(executor.submit(derive_basin, op))
 
-            for future in as_completed(futures):
-                if future.result() is not None:
-                    basin_results.append(future.result())
+        for future in as_completed(futures):
+            if future.result() is not None:
+                basin_results.append(future.result())
     # clear fdir and acc from memory
     del fdir
     del acc
