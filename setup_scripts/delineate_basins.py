@@ -32,16 +32,18 @@ t0 = time.time()
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, 'source_data/')
 
-# data_dir = '/media/danbot/Samsung_T5/geospatial_data/'
-processed_dem_dir = os.path.join(BASE_DIR, 'processed_data/processed_dem/')
 
-# processed_dem_dir = '/media/danbot/Samsung_T5/geospatial_data/DEM_data/processed_dem/'
 
 # specify the DEM source
 # either 'EarthEnv_DEM90' or 'USGS_3DEP'
 DEM_source = 'EarthEnv_DEM90'
 # DEM_source = 'PYSHEDS_burned_streams'
 DEM_source = 'USGS_3DEP'
+
+# data_dir = '/media/danbot/Samsung_T5/geospatial_data/'
+processed_dem_dir = os.path.join(BASE_DIR, f'processed_data/processed_dem/{DEM_source}')
+
+# processed_dem_dir = '/media/danbot/Samsung_T5/geospatial_data/DEM_data/processed_dem/'
 
 dem_treatment = 'FILLED' #
 # if 'burned' in DEM_source:
