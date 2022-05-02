@@ -6,7 +6,7 @@ from multiprocessing import Pool
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DEM_DIR = os.path.join(BASE_DIR, 'source_data/dem_data')
-DEM_DIR = os.path.join('/media/danbot/Samsung_T5/geospatial_data/DEM_data/')
+# DEM_DIR = os.path.join('/media/danbot/Samsung_T5/geospatial_data/DEM_data/')
 
 EP_DIR = os.path.join(DEM_DIR, 'USGS_3DEP')
 
