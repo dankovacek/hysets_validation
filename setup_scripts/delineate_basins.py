@@ -471,8 +471,9 @@ for region_code in ['08P']:# region_codes:
 
     n_cores = cpu_count()
 
-    with Pool(processes=10) as pool:
-        basin_results = pool.map(derive_basin, output_paths)
+    pl = Pool(processes=int(n_cores-1))
+    basin_results = pl.map(derive_basin, output_paths)
+    pl.close()
     
     # clear fdir and acc from memory
     del fdir
