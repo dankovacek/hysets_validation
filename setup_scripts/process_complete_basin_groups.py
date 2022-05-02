@@ -104,7 +104,7 @@ def download_NHN_hydrologic_feature_data(pgs):
 def download_SEAK_streams_feature_data():
     save_path = os.path.join(DATA_DIR, 'NHN_feature_data/SEAK_features/')
     if not os.path.exists(save_path):
-        os.mkdir(save_path)
+        os.makedirs(save_path)
     seak_df = pd.read_csv(file_list_dir+'USGS_hydrography_data.txt', header=None)
     seak_df.columns = ['links']
     seak_links = seak_df['links'].values
