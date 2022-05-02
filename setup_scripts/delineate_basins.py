@@ -1,7 +1,7 @@
 from concurrent.futures import process
 import os
 import time
-import pickle
+import json
 
 import pandas as pd
 import numpy as np
@@ -99,17 +99,16 @@ def get_grp_polygon(basin_polygons_path, polygon_fnames, grp_code):
 # create a dictionary where the key: value pairs 
 # map stations to the regional group name
 stn_mapper_path = os.path.join(BASE_DIR, 'processed_data/')
-mapper_dict_file = 'station_to_region_mapper.npy'
+mapper_dict_file = 'station_to_region_mapper.json'
 
 
 if not os.path.exists(os.path.join(stn_mapper_path, mapper_dict_file)):
-    raise Exception; '  Mapper file not found.  You need to first run process_hydrologic_regions.py'
+    raise Exception; '  Mapper file not found.  You need to first run process_complete_basin_groups.py'
    
 
 # with open(stn_mapper_path + mapper_dict_file, 'rb') as handle:
 #     code_dict = np.load(handle)
-code_dict = np.load(stn_mapper_path + mapper_dict_file, allow_pickle=True)
-
+code_dict = json.loads(stn_mapper_path + mapper_dict_file)
 
 def ensure_dir(file_path):
     directory = os.path.dirname(file_path)
