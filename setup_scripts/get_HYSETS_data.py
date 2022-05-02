@@ -38,5 +38,5 @@ if not os.path.exists(save_path):
     os.system(command)
 
 os.system(f'unzip {HYSETS_DIR}/{basin_filename} -d {BASIN_DIR}')
-os.remove(f'{HYSETS_DIR}/{basin_filename}')
+# os.remove(f'{HYSETS_DIR}/{basin_filename}')
 
