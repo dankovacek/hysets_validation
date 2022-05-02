@@ -7,7 +7,8 @@ import pandas as pd
 import numpy as np
 
 from functools import partial
-from multiprocessing import Pool
+
+from multiprocessing import Pool, cpu_count
 
 from numba import prange, jit
 
@@ -466,7 +467,9 @@ for region_code in region_codes:
 
     output_paths = [os.path.join(output_basin_polygon_path, f'{s}_{DEM_source}_basin.geojson') for s in stations]
 
-    p = Pool()
+    n_cores = cpu_count()
+
+    p = Pool(int(n_cores - 1))
 
     basin_results = p.map(derive_basin, output_paths)
     
