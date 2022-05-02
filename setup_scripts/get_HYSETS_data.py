@@ -28,10 +28,10 @@ download_path = 'https://water.usgs.gov/GIS/dsdl/'
 
 # get the very large file containing basin polygons
 # download_path = 'https://files.osf.io/v1/resources/rpc3w/providers/googledrive/?zip='
-download_path = 'https://osf.io/p8unw/download'
+download_path = 'https://files.osf.io/v1/resources/rpc3w/providers/dropbox/'
 basin_filename = 'HYSETS_watershed_boundaries.zip'
 # command = f'wget {download_path}{basin_filename} -O {HYSETS_DIR}/{basin_filename}'
-command = f'wget {download_path} -d {HYSETS_DIR}/'
+command = f'wget {download_path}{basin_filename} -d {HYSETS_DIR}/'
 save_path = f'{BASIN_DIR}/{basin_filename}'
 if not os.path.exists(save_path):
     print(f'    ...downloading file {basin_filename} from {download_path}')
