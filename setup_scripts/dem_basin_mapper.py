@@ -54,7 +54,7 @@ save_path = DATA_DIR + f'processed_dem/{DEM_source}/'
 # save_path = f'/media/danbot/Samsung_T5/geospatial_data/DEM_data/processed_dem/{DEM_source}'
 
 if not os.path.exists(save_path):
-    os.mkdir(save_path)
+    os.makedirs(save_path)
 
 def get_crs_and_resolution(fname):
     raster = rxr.open_rasterio(fname)
