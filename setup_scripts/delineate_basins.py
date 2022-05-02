@@ -8,7 +8,7 @@ import numpy as np
 
 from functools import partial
 
-from multiprocessing import Pool, cpu_count
+from multiprocessing import Pool, Process, cpu_count
 
 from numba import prange, jit
 
@@ -469,9 +469,10 @@ for region_code in region_codes:
 
     n_cores = cpu_count()
 
-    p = Pool(int(n_cores - 1))
+    # p = Pool(int(n_cores - 1))
+    basin_results = Process(target=derive_basin, args=output_paths)
 
-    basin_results = p.map(derive_basin, output_paths)
+    # basin_results = p.map(derive_basin, output_paths)
     
     # clear fdir and acc from memory
     del fdir
