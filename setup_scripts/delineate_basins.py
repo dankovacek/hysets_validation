@@ -3,10 +3,13 @@ import os
 import time
 import json
 
+import queue
+import threading
+
 import pandas as pd
 import numpy as np
 
-from functools import partial
+# from functools import partial
 
 # import multiprocessing
 
@@ -35,8 +38,6 @@ t0 = time.time()
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, 'source_data/')
 
-
-
 # specify the DEM source
 # either 'EarthEnv_DEM90' or 'USGS_3DEP'
 DEM_source = 'EarthEnv_DEM90'
@@ -46,7 +47,7 @@ DEM_source = 'USGS_3DEP'
 # data_dir = '/media/danbot/Samsung_T5/geospatial_data/'
 processed_dem_dir = os.path.join(BASE_DIR, f'processed_data/processed_dem/{DEM_source}')
 
-# processed_dem_dir = f'/media/danbot/Samsung_T5/geospatial_data/DEM_data/processed_dem/{DEM_source}'
+processed_dem_dir = f'/media/danbot/Samsung_T5/geospatial_data/DEM_data/processed_dem/{DEM_source}'
 
 dem_treatment = 'FILLED' #
 # if 'burned' in DEM_source:
@@ -365,7 +366,7 @@ def check_for_baseline_drainage_area(stn):
     return area
 
 
-def derive_basin(path):
+def derive_basin(q, path):
     station = path.split('/')[-1].split('_')[0]
         
     # stations in the region to trim the number of redundant file loadings
@@ -469,9 +470,19 @@ for region_code in ['08P']:# region_codes:
 
     output_paths = [os.path.join(output_basin_polygon_path, f'{s}_{DEM_source}_basin.geojson') for s in stations]
 
-    pl = Pool()
-    basin_results = pl.map(derive_basin, output_paths)
-    pl.close()
+    # basin_results = []
+    # p = Pool()
+    # basin_results = p.map(derive_basin, output_paths)
+
+
+    q = queue.Queue()
+
+    for p in output_paths:
+        t = threading.Thread(target=derive_basin, args = (q,p))
+        t.daemon = True
+        t.start()
+
+    basin_results = q.get()
     
     # clear fdir and acc from memory
     del fdir
