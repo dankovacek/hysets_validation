@@ -11,21 +11,22 @@ for p in [WSC_DIR, BASIN_DIR]:
         os.mkdir(p)
 
 url = 'https://collaboration.cmc.ec.gc.ca/cmc/hydrometrics/www/HydrometricNetworkBasinPolygons/'
+
 # these two-digit strings represent the set of WSC regions 
 # that cover BC.  Modify to customize your study area.
-# for zone in ['07', '08', '09', '10']:
-#     filename = f'{zone}.zip'
-#     command = f'wget {url}{filename} -O {BASIN_DIR}/{filename}'
+for zone in ['07', '08', '09', '10']:
+    filename = f'{zone}.zip'
+    command = f'wget {url}{filename} -O {BASIN_DIR}/{filename}'
 
-#     # download the file
-#     save_path = f'{BASIN_DIR}/{filename}'
-#     if not os.path.exists(save_path):
-#         print(f'    ...downloading file {filename} from {url}')
-#         os.system(command)
+    # download the file
+    save_path = f'{BASIN_DIR}/{filename}'
+    if not os.path.exists(save_path):
+        print(f'    ...downloading file {filename} from {url}')
+        os.system(command)
 
-#     # unzip the archive
-#     os.system(f'unzip {BASIN_DIR}/{filename} -d {BASIN_DIR}')
-#     os.remove(f'{BASIN_DIR}/{filename}')
+    # unzip the archive
+    os.system(f'unzip {BASIN_DIR}/{filename} -d {BASIN_DIR}')
+    os.remove(f'{BASIN_DIR}/{filename}')
 
 # remove qgz files and leave the folders
 for f in os.listdir(BASIN_DIR):
