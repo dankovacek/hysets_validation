@@ -33,7 +33,6 @@ nhn = gpd.read_file(nhn_path + nhn_fname)
 nhn = nhn.to_crs(3005)
 
 # import BC border polygon
-
 bc_border_file = os.path.join(DATA_DIR, 'BC_border/BC_PROV_BOUNDARIES_LINES_500M.geojson')
 bc_border_lines = gpd.read_file(bc_border_file)
 bc_border_crs = bc_border_lines.crs
@@ -67,14 +66,11 @@ bc_polygons = bc_polygons.append(alsek_polygons)
 bc_polygons.sort_values(by='WSCSSDA', inplace=True)
 bc_polygons.drop_duplicates(subset='geometry', inplace=True, keep='first')
 
-
 # merge wscssda polygons into more general wscsda groups
 dissolved_regions = bc_polygons.dissolve(by='WSCSDA')
 
 def download_files(input):
     (url, save_path) = input
-    # print(url)
-    # print(save_path)
     urq.urlretrieve(url, save_path)
 
 
@@ -260,7 +256,7 @@ if not os.path.exists(stn_mapper_path):
 existing_mappers = os.listdir(stn_mapper_path)
 if not os.path.exists(os.path.join(stn_mapper_path, mapper_dict_file)):
     code_dict = map_stations_to_basin_groups(basin_polygons_path)
-    np.save(stn_mapper_path + mapper_dict_file)
+    np.save(stn_mapper_path + mapper_dict_file, code_dict)
 else:
     print('  Mapper dict already created.')
     # for reg, stns in code_dict.items():
