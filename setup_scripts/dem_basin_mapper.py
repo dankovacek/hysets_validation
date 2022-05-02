@@ -30,7 +30,7 @@ DEM_source = 'USGS_3DEP'
 
 epsg_code = 4326
 vrt_file = 'EENV_DEM_mosaic_4326.vrt'
-if DEM_source = 'USGS_3DEP':
+if DEM_source == 'USGS_3DEP':
     epsg_code = 4269
     vrt_file = f'BC_DEM_mosaic_{epsg_code}.vrt'
     # dem_dir = '/media/danbot/Samsung_T5/geospatial_data/DEM_data/'
