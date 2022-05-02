@@ -44,7 +44,7 @@ DEM_source = 'USGS_3DEP'
 # data_dir = '/media/danbot/Samsung_T5/geospatial_data/'
 processed_dem_dir = os.path.join(BASE_DIR, f'processed_data/processed_dem/{DEM_source}')
 
-# processed_dem_dir = '/media/danbot/Samsung_T5/geospatial_data/DEM_data/processed_dem/'
+processed_dem_dir = f'/media/danbot/Samsung_T5/geospatial_data/DEM_data/processed_dem/{DEM_source}'
 
 dem_treatment = 'FILLED' #
 # if 'burned' in DEM_source:
@@ -370,14 +370,14 @@ def derive_basin(path):
     baseline_DA = check_for_baseline_drainage_area(station)
     # print(f'    ...{station} baseline DA: {baseline_DA:.1f}km^2')
 
-    if not os.path.exists(path):            
-        distance, pour_point = find_pour_point(acc, station, baseline_DA, raster_res, snap_method)
-        
-        basin_gdf = pysheds_basin_polygon(station, grid, fdir, 'EPSG:3005', baseline_DA, pour_point)
-        
-        if basin_gdf is not None:
-            print(f'    ...completed basin polygon creation for {station} {distance:.0f}m from reported location.')
-            return (basin_gdf, path)
+    # if not os.path.exists(path):            
+    distance, pour_point = find_pour_point(acc, station, baseline_DA, raster_res, snap_method)
+    
+    basin_gdf = pysheds_basin_polygon(station, grid, fdir, 'EPSG:3005', baseline_DA, pour_point)
+    
+    if basin_gdf is not None:
+        print(f'    ...completed basin polygon creation for {station} {distance:.0f}m from reported location.')
+        return (basin_gdf, path)
         
 dir_method = 'D8' # D8, DINF
 delineation_method = 'PYSHEDS'
@@ -396,7 +396,7 @@ resolution = 'res1'
 
 # '09A', '08F'
 #
-for region_code in region_codes:
+for region_code in ['08P']:# region_codes:
     # get the covering region for the station
     i += 1
     t_start = time.time()
@@ -469,10 +469,9 @@ for region_code in region_codes:
 
     n_cores = cpu_count()
 
-    # p = Pool(int(n_cores - 1))
-    basin_results = Process(target=derive_basin, args=output_paths)
+    p = Pool(processes=int(n_cores - 1))
 
-    # basin_results = p.map(derive_basin, output_paths)
+    basin_results = p.map(derive_basin, output_paths)
     
     # clear fdir and acc from memory
     del fdir
