@@ -142,10 +142,10 @@ def fill_holes(data):
         return data
     
 # fill holes and gaps in merged polygons
-# bc_filled = dissolved_regions.copy()
-# for i, grp in dissolved_regions.iterrows():
-#     data = dissolved_regions[dissolved_regions.index == i]
-#     bc_filled.loc[i, 'geometry'] = fill_holes(data)
+bc_filled = dissolved_regions.copy()
+for i, grp in dissolved_regions.iterrows():
+    data = dissolved_regions[dissolved_regions.index == i]
+    bc_filled.loc[i, 'geometry'] = fill_holes(data)
 
 # further group the Liard, Fraser, and Peace sub-basins
 groups = {
@@ -156,30 +156,30 @@ groups = {
 }
 
 # rename groups in order to merge shapes in next step
-# bc_filled['group_name'] = bc_filled.index.values
-# for k, g in groups.items():
-#     bc_filled.loc[bc_filled.index.isin(g), 'group_name'] = k
+bc_filled['group_name'] = bc_filled.index.values
+for k, g in groups.items():
+    bc_filled.loc[bc_filled.index.isin(g), 'group_name'] = k
 
-# merged_regions = bc_filled.dissolve(by='group_name')
+merged_regions = bc_filled.dissolve(by='group_name')
 # # find and fill holes in the dissolved polygons
-# bc_merged_filled = merged_regions.copy()
+bc_merged_filled = merged_regions.copy()
 
-# for i, grp in bc_merged_filled.iterrows():
-#     data = bc_merged_filled[bc_merged_filled.index == i]
-#     filled_geom = fill_holes(data)
+for i, grp in bc_merged_filled.iterrows():
+    data = bc_merged_filled[bc_merged_filled.index == i]
+    filled_geom = fill_holes(data)
     
-#     # to add a buffer, the crs must be in epsg 3005
-#     assert bc_merged_filled.crs == 3005
-#     buffer = 500
-#     if i == '07O':
-#         buffer = 1000
-#     buffered_geom = filled_geom.buffer(1000, resolution=50)
-#     bc_merged_filled.loc[i, 'geometry'] = buffered_geom
+    # to add a buffer, the crs must be in epsg 3005
+    assert bc_merged_filled.crs == 3005
+    buffer = 500
+    if i in ['07O', '']:
+        buffer = 1000
+    buffered_geom = filled_geom.buffer(1000, resolution=50)
+    bc_merged_filled.loc[i, 'geometry'] = buffered_geom
 
 # add in the WSCSDA
-# bc_merged_filled['WSCSDAs'] = bc_merged_filled.index.values
-# for k, v in groups.items():
-#     bc_merged_filled.loc[bc_merged_filled.index == k, 'WSCSDAs'] = ','.join(v)
+bc_merged_filled['WSCSDAs'] = bc_merged_filled.index.values
+for k, v in groups.items():
+    bc_merged_filled.loc[bc_merged_filled.index == k, 'WSCSDAs'] = ','.join(v)
 
 dem_dir = os.path.join(DATA_DIR, 'dem_data/')
 
@@ -187,29 +187,26 @@ dem = rxr.open_rasterio(dem_dir + 'BC_DEM_mosaic_4326.vrt')
 dem_crs = dem.rio.crs.to_epsg()
 
 # save the output file
-# bc_merged_filled = bc_merged_filled.to_crs(dem_crs)
+bc_merged_filled = bc_merged_filled.to_crs(dem_crs)
 
 output_folder = os.path.join(BASE_DIR, 'processed_data/merged_basin_groups/')
 if not os.path.exists(output_folder):
     os.mkdir(output_folder)
 
-# bc_merged_filled.to_file(output_folder + f'BC_basin_region_groups_EPSG{dem_crs}.geojson', driver='GeoJSON')
-# print(f'   ...BC_basin_region_groups.geojson file created successfully.')
+bc_merged_filled.to_file(output_folder + f'BC_basin_region_groups_EPSG{dem_crs}.geojson', driver='GeoJSON')
+print(f'   ...BC_basin_region_groups.geojson file created successfully.')
 
 # save each row as a separate shape file
-# split_out_dir = output_folder + 'split_groups/'
-# if not os.path.exists(split_out_dir):
-#     os.mkdir(split_out_dir)
-# for code in bc_merged_filled.index.values:
-#     gdf = bc_merged_filled[bc_merged_filled.index == code].copy()
-#     if code in ['08A']:
-#         # gdf.to_file(split_out_dir + f'{code}_{dem_crs}.geojson', driver='GeoJSON')
-#         print(f'   ...saved individual polygons separately at {split_out_dir}')
+split_out_dir = output_folder + 'split_groups/'
+if not os.path.exists(split_out_dir):
+    os.mkdir(split_out_dir)
+for code in bc_merged_filled.index.values:
+    gdf = bc_merged_filled[bc_merged_filled.index == code].copy()
+    gdf.to_file(split_out_dir + f'{code}_{dem_crs}.geojson', driver='GeoJSON')
+    print(f'   ...saved individual polygons separately at {split_out_dir}')
 
-# print(asdf)
 # create a dictionary where the key: value pairs 
 # map stations to the regional group name
-
 hysets_df = pd.read_csv(os.path.join(BASE_DIR, 'source_data/HYSETS_data/HYSETS_watershed_properties.txt'), sep=';')
 hysets_locs = [Point(x, y) for x, y in zip(hysets_df['Centroid_Lon_deg_E'].values, hysets_df['Centroid_Lat_deg_N'])]
 hysets_df = gpd.GeoDataFrame(hysets_df, geometry=hysets_locs, crs='EPSG:4269')
