@@ -1,4 +1,5 @@
-from concurrent.futures import process
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from multiprocessing.pool import ThreadPool
 import os
 import time
 import json
@@ -366,7 +367,7 @@ def check_for_baseline_drainage_area(stn):
     return area
 
 
-def derive_basin(q, path):
+def derive_basin(path):
     station = path.split('/')[-1].split('_')[0]
         
     # stations in the region to trim the number of redundant file loadings
@@ -381,6 +382,8 @@ def derive_basin(q, path):
     if basin_gdf is not None:
         print(f'    ...completed basin polygon creation for {station} {distance:.0f}m from reported location.')
         return (basin_gdf, path)
+    else:
+        return None
         
 dir_method = 'D8' # D8, DINF
 delineation_method = 'PYSHEDS'
@@ -470,20 +473,16 @@ for region_code in ['08P']:# region_codes:
 
     output_paths = [os.path.join(output_basin_polygon_path, f'{s}_{DEM_source}_basin.geojson') for s in stations]
 
-    # basin_results = []
-    # p = Pool()
-    # basin_results = p.map(derive_basin, output_paths)
-
-
-    q = queue.Queue()
-
+    futures = []
+    basin_results = []
     for p in output_paths:
-        t = threading.Thread(target=derive_basin, args = (q,p))
-        t.daemon = True
-        t.start()
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            for op in output_paths:
+                futures.append(executor.submit(derive_basin, op))
 
-    basin_results = q.get()
-    
+            for future in as_completed(futures):
+                if future.result() is not None:
+                    basin_results.append(future.result())
     # clear fdir and acc from memory
     del fdir
     del acc
