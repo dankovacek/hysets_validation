@@ -8,7 +8,9 @@ import numpy as np
 
 from functools import partial
 
-from multiprocessing import Pool, Process, cpu_count
+import multiprocessing
+multiprocessing.set_start_method('spawn')
+from multiprocessing import Pool, cpu_count
 
 from numba import prange, jit
 
