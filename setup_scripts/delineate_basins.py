@@ -108,10 +108,8 @@ if not os.path.exists(os.path.join(stn_mapper_path, mapper_dict_file)):
 
 # with open(stn_mapper_path + mapper_dict_file, 'rb') as handle:
 #     code_dict = np.load(handle)
-code_dict = np.load(stn_mapper_path + mapper_dict_file)
+code_dict = np.load(stn_mapper_path + mapper_dict_file, allow_pickle=True)
 
-print(code_dict)
-print(asdf)
 
 def ensure_dir(file_path):
     directory = os.path.dirname(file_path)
