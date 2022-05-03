@@ -4,8 +4,8 @@ import os
 import time
 import json
 
-import queue
-import threading
+# import queue
+# import threading
 
 import pandas as pd
 import numpy as np
@@ -401,7 +401,7 @@ resolution = 'res1'
 
 # '09A', '08F'
 #
-for region_code in region_codes[4:]:
+for region_code in region_codes:
     # get the covering region for the station
     i += 1
     t_start = time.time()
@@ -474,19 +474,21 @@ for region_code in region_codes[4:]:
 
     n_cpus = multiprocessing.cpu_count()
 
-    futures = []
-    basin_results = []
-    
-    with ThreadPoolExecutor(max_workers=n_cpus) as executor:
-        for op in output_paths:
-            futures.append(executor.submit(derive_basin, op))
+    p = Pool(processes=n_cpus)
+    basin_results = p.map(derive_basin, output_paths)
+    p.close()
 
-        for future in as_completed(futures):
-            if future.result() is not None:
-                basin_results.append(future.result())
+    # futures = []
+    # basin_results = []
+    
+    # with ThreadPoolExecutor(max_workers=n_cpus) as executor:
+    #     for op in output_paths:
+    #         futures.append(executor.submit(derive_basin, op))
+
+    #     for future in as_completed(futures):
+    #         if future.result() is not None:
+    #             basin_results.append(future.result())
     # clear fdir and acc from memory
-    del fdir
-    del acc
     
     basin_results = [e for e in basin_results if e is not None]
     if len(basin_results) > 0:
