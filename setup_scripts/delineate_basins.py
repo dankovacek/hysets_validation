@@ -91,6 +91,7 @@ hysets_df = hysets_df.to_crs(3005)
 # print(seak_gdf)
 # print(asdf)
 
+
 def get_grp_polygon(basin_polygons_path, polygon_fnames, grp_code):
     grp_polygon_path = [e for e in polygon_fnames if grp_code in e][0]
     grp_polygon = gpd.read_file(basin_polygons_path + grp_polygon_path)
@@ -474,9 +475,8 @@ for region_code in region_codes:
 
     n_cpus = multiprocessing.cpu_count()
 
-    p = Pool(processes=n_cpus)
-    basin_results = p.map(derive_basin, output_paths)
-    p.close()
+    with Pool(processes=n_cpus) as pool:
+        basin_results = p.map(derive_basin, output_paths)
 
     # futures = []
     # basin_results = []
