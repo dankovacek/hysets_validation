@@ -154,7 +154,7 @@ class RasterData:
         self.stations = sorted([s for s in list(set(main_data.code_dict.keys())) if main_data.code_dict[s] == group_code])
         print(f'   ...{len(self.stations)} stations found in {group_code}.')
         
-        self.grid = Grid.from_raster(region_dem_path, data_name='dem')
+        self.grid = Grid.from_raster(region_dem_path)
         dem = self.grid.read_raster(region_dem_path, data_name='dem')
         print('   ...Dem loaded.')
         self.raster_res = dem.dy_dx[::-1]
@@ -216,7 +216,7 @@ class Basin:
         return int(min_area_m / (abs(self.raster_res[0] * self.raster_res[1])))
 
 
-    def pysheds_basin_polygon(self):
+    def pysheds_basin_polygon(self, crs):
         
         # snapped_loc_gdf = gpd.GeoDataFrame(geometry=[pour_point], crs=hysets_df.crs)
         # snapped_loc_gdf.to_file(os.path.join(stn_mapper_path, 'snapped_locations_hires'))
@@ -238,19 +238,29 @@ class Basin:
             print(f'    ...basin delineation failed for {self.stn}')
             return None
         else:
-            gdf = gpd.GeoDataFrame(geometry=[basin_polygon], crs=main_data.crs)
-            gdf['geom_type'] = gdf.geometry.geom_type
-            gdf['geometry'] = self.fill_holes(gdf)
-            gdf['out_path'] = self.output_path
-            derived_area = gdf.geometry.area.values[0] / 1E6
+            gdf = gpd.GeoDataFrame(geometry=[basin_polygon], crs=crs)
+            geom = self.fill_holes(gdf)
+            derived_area = geom.area / 1E6
             area_r = 100 * derived_area / self.baseline_DA
+            data = {
+                'out_path': self.output_path,
+                'derived_area_km': derived_area,
+                'area_r': area_r,
+            }
+            df = pd.DataFrame(data)
+            gdf = gpd.GeoDataFrame(df, geometry=[geom])
+            print('')
+            print('')
+            print('constructed gdf')
+            print(gdf)
             print(f'    ...delineated basin is {area_r:.0f}% baseline area for {self.stn}')
+            print('')
             print('')
             return gdf
 
 
     # @jit(nopython=True)
-    def affine_map_vec_numba(affine, x, y):
+    def affine_map_vec_numba(self, affine, x, y):
         a, b, c, d, e, f, _, _, _ = affine
         n = x.size
         new_x = np.zeros(n, dtype=np.float32)
@@ -261,10 +271,10 @@ class Basin:
         return new_x, new_y
 
 
-    def get_nearest_point(self, area_threshold, bounds_type='minmax'):
+    def get_nearest_point(self, area_threshold, threshold_cells, bounds_type='minmax'):
         # mask for just the cells in the expected range
-        max_cells = int((1 + area_threshold) * self.expected_area_m)
-        min_cells = int((1 - area_threshold) * self.expected_area_m)
+        max_cells = int((1 + area_threshold) * threshold_cells)
+        min_cells = int((1 - area_threshold) * threshold_cells)
 
         if bounds_type == 'min':
             yi, xi = np.where((rdat.acc > min_cells))
@@ -309,21 +319,20 @@ class Basin:
         # Snap pour point to threshold accumulation cell
         distance = 0
         x, y = self.stn_loc[0], self.stn_loc[1]
-        print(x, y)
         x_snap, y_snap = x, y
         # try:
             # as a first try, use a minimum of 1km^2 accumulation threshold
-        d1 = True
+        d1 = False
         threshold_cells = self.get_acc_threshold(self.min_threshold)
-        x_snap, y_snap = rdat.acc.snap_to_mask(rdat.acc > threshold_cells, (x, y))
-        shift_distance = np.sqrt((x_snap - x)**2 + (y_snap - y)**2)
+        # x_snap, y_snap = rdat.grid.snap_to_mask(rdat.acc > threshold_cells, (x, y))
+        # shift_distance = np.sqrt((x_snap - x)**2 + (y_snap - y)**2)
         # except Exception as e:
         #     print(f'   ...Snap to mask failed {threshold_cells:.0f} cells.')
         #     d1 = False
         #     x_snap, y_snap = x, y
 
-        if d1:
-            distance = shift_distance
+        # if d1:
+        #     distance = shift_distance
         
         # max. allowable distance to move a station (m)
         max_shift_distance_m = 350 
@@ -335,7 +344,7 @@ class Basin:
             try:
                 distance = np.sqrt((x_nr - x)**2 + (y_nr - y)**2)
                 distance_diff = abs(distance - original_distance)
-                print(f'   pour point adjusted by {shift_distance:.0f}m for min threshold.')
+                print(f'   pour point adjusted by {distance:.0f}m for min threshold.')
                 if distance_diff <= max_shift_distance_m:
                     x_snap, y_snap = x_nr, y_nr
             except Exception as e:
@@ -369,9 +378,7 @@ class Basin:
                     # print(f'   Area threshold range failed.')
                     break      
 
-        pour_point = Point(x_snap, y_snap)
-
-        return distance, pour_point
+        return Point(x_snap, y_snap)
 
 
     def fill_holes(data):
@@ -386,7 +393,7 @@ class Basin:
             data_gaps = gpd.GeoDataFrame(geometry=gap_list, crs=data.crs)
             # appended_set = pd.concat([data, data_gaps])
             appended_set = data.append(data_gaps)
-            appended_set['group'] = 0
+            appended_set.loc[:, 'group'] = 0
             merged_polygon = appended_set.dissolve(by='group', aggfunc='sum')
             print(f'     merged geometry has {len(merged_polygon)} polygon (s)')
             if len(merged_polygon) == 1:
@@ -405,12 +412,13 @@ def derive_basin(basin):
     # stations in the region to trim the number of redundant file loadings
     # baseline_DA = get_baseline_drainage_area(station)
     # print(f'    ...{station} baseline DA: {baseline_DA:.1f}km^2')
-    basin.distance, basin.pour_point = basin.find_pour_point()
+    # find the pour point
+    basin.pour_point = basin.find_pour_point()
     basin.basin_gdf = basin.pysheds_basin_polygon('EPSG:3005')
     if basin.basin_gdf is not None:
-        print(f'    ...completed basin polygon creation for {basin.stn} {basin.distance:.0f}m from reported location.')
+        print(f'    ...completed basin polygon creation for {basin.stn}.')
         return basin.basin_gdf
-    else:
+    else: 
         return None
         
 dir_method = 'D8' # D8, DINF
@@ -461,8 +469,6 @@ for group_code in ['08P']:# main_data.group_codes:# region_codes:
         output_folder = main_data.output_folder
         raster_res = rdat.raster_res
 
-        print()
-
         basin = Basin(
             stn,
             snap_method,
@@ -475,9 +481,14 @@ for group_code in ['08P']:# main_data.group_codes:# region_codes:
 
         basins.append(basin)
 
+    # print(asdfsd)
+
     basin_results = ray.get([derive_basin.remote(b) for b in basins])
+
+    print(basin_results)
+    print(asdfasdfasd)
     
-    basin_results = [e for e in basin_results if e is not None]
+    # basin_results = [e for e in basin_results if e is not None]
     if len(basin_results) > 0:
         for g, path in basin_results:
             g.to_file(path, driver='GeoJSON')
