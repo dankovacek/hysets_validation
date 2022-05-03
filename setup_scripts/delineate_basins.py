@@ -402,8 +402,6 @@ resolution = 'res1'
 # '09A', '08F'
 #
 for region_code in region_codes[4:]:
-    print(region_code)
-    print(asdfsa)
     # get the covering region for the station
     i += 1
     t_start = time.time()
