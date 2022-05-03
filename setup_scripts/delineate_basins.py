@@ -402,7 +402,7 @@ resolution = 'res1'
 
 # '09A', '08F'
 #
-for region_code in region_codes:
+for region_code in ['08P']:# region_codes:
     # get the covering region for the station
     i += 1
     t_start = time.time()
