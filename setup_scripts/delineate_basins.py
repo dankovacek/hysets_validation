@@ -476,7 +476,7 @@ for region_code in region_codes:
     n_cpus = multiprocessing.cpu_count()
 
     with Pool(processes=n_cpus) as pool:
-        basin_results = p.map(derive_basin, output_paths)
+        basin_results = pool.map(derive_basin, output_paths)
 
     # futures = []
     # basin_results = []
