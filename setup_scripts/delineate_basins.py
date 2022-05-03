@@ -12,9 +12,7 @@ import numpy as np
 
 # from functools import partial
 
-import multiprocessing
-
-from multiprocessing import Pool
+import multiprocessing as mp
 
 # from numba import prange, jit
 
@@ -32,6 +30,8 @@ from pysheds.grid import Grid
 
 import warnings
 warnings.filterwarnings('ignore')
+
+mp.set_start_method('spawn')
 
 
 t0 = time.time()
@@ -473,9 +473,9 @@ for region_code in region_codes:
 
     output_paths = [os.path.join(output_basin_polygon_path, f'{s}_{DEM_source}_basin.geojson') for s in stations]
 
-    n_cpus = multiprocessing.cpu_count()
+    n_cpus = mp.cpu_count()
 
-    with Pool(processes=n_cpus) as pool:
+    with mp.Pool(processes=n_cpus) as pool:
         basin_results = pool.map(derive_basin, output_paths)
 
     # futures = []
