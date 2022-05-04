@@ -14,10 +14,10 @@ for 128 GB RAM, 12 core processor.)
 **Install GDAL**
 
 > `sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable`  
-> `sudo apt-get update`
+> `sudo apt-get update` `sudo apt-get upgrade`
 
 Install software utilities:
-&gt;`sudo apt-get install libgdal-dev gdal-bin libproj15 libproj19 libproj-dev openmpi-bin libopenmpi-dev libboost-iostreams-dev parallel unzip dos2unix zip`
+&gt;`sudo apt-get install libgdal-dev gdal-bin libproj15 libproj-dev openmpi-bin libopenmpi-dev libboost-iostreams-dev libspatial-index-dev parallel unzip dos2unix zip`
 
 **Clone the repository (from the root directory)**
 
@@ -51,7 +51,7 @@ validation we only need the results file, basin geometry, and station
 locations. The results file is included in the repo, and we can download
 the rest with the following script, found in `setup_scripts/`:
 
-> `python get_HYSETS_data.py`
+> `cd setup_scripts` `python get_HYSETS_data.py`
 
 The basin polygon file (~15GB) could take 15-20 minutes on it’s own to
 download, so open a second terminal window and continue the setup
@@ -95,7 +95,8 @@ script in `setup_scripts`:
 
 > `python get_EarthEnv_DEM.py`
 
-> `http://mirrors.iplantcollaborative.org/earthenv_dem_data/EarthEnv-DEM90/EarthEnv-DEM90_N55W125.tar.gz`
+Links to invidivual DEM tiles look like the following:
+&gt;`http://mirrors.iplantcollaborative.org/earthenv_dem_data/EarthEnv-DEM90/EarthEnv-DEM90_N55W125.tar.gz`
 
 The resulting .vrt mosaic should look like below:
 
@@ -158,7 +159,7 @@ in `setup_scripts/`. (ensure the virtual environment created above is
 activated from the step above, you should see `(env) root@...` in your
 terminal). From `setup_scripts`:
 
-> `python process_hydrologic_regions.py`
+> `python process_complete_basin_groups.py`
 
 The script will download the NHN file containing geometries
 corresponding to hydrographic features in BC. The script then takes the
@@ -191,28 +192,10 @@ section below](#markdown-header-trim-coastline-dem). Additional details
 about the NHN are also provided in the [Additional Notes section
 below](#markdown-header-nhn-additional-notes).
 
-Merge Stream Vectors for Burning
---------------------------------
-
-**Optional**: if you want to re-derive basin groups, you can run the
-script below, otherwise, the polygons describing the study region are
-provided in the folder `processed_data/merged_basin_groups`.
-
-Use the WSC SDA ids to group NHN features into the same polygons as used
-in the regional groupings. In each NHN vector file
-(i.e. `nhn_rhn_07aa000_shp_en.zip`, see National Hydrographic Network
-section above) there is a layer containing the string `NLFLOW` which
-represents the continuous stream network. Similar to how the
-sub-subbasins were grouped above, use the same procedure to group the
-stream vectors and save them as separate files. These will be used in
-the FillBurn processing step for dem conditioning.
-
-> `python group_stream_vectors.py` (**optional**)
-
 **GLHYMPHS**
 
 For porosity and permeability, HYSETS used the dataset from GLobal
-HYdrogeology MaPS (Gleeson et al. 2014).
+HYdrogeology MaPS \[@gleeson2014glimpse\].
 
 > `mkdir source_data/GLHYMPHS_data/`
 
@@ -259,24 +242,9 @@ The final step is to validate the basin attributes derived in HYSETS (or
 other dataset) using the set of stations whose catchment boundaries
 intersect BC. The manual basin delineation step is the most
 computationally intensive step of the validation process, and it’s
-executed with the script `pysheds_derive_basin_polygons.py`
+executed with the script `setup_scripts/delineate_basins.py`
 
-> `python pysheds_derive_basin_polygons.py`
-
-GeoBC Digital Road Atlas
-------------------------
-
-Especially using higher resolution DEM, roads and bridges create issues
-when delineating basins. Use the provincial road atlas in combination
-with national hydrographic network streams to breach dems that don’t
-delineate properly due to man-made obstructions.
-
-Download the [Digital Road Atlas from the Gov’t of
-BC](https://www2.gov.bc.ca/gov/content/data/geographic-data-services/topographic-data/roads),
-or access the `.geojson` file using an ftp client (I used the
-open-source software [Filezilla](https://filezilla-project.org/))
-directly from the [ftp
-link](ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/DRA_Public/).
+> `setup_scripts/python pysheds_derive_basin_polygons.py`
 
 Additional Notes
 ----------------
@@ -322,9 +290,10 @@ Region*](https://pubs.usgs.gov/ds/2006/236/download/shoreline_pacnw.zip)):
 
 > https://pubs.usgs.gov/ds/2006/236/catalog.shtml\#GIS\_data\_table
 
-### NHN Additional Notes
+NHN Additional Notes
+--------------------
 
-The NHN also contains many hydrologic features in detail, provided in
+The NHN data contains many hydrologic features in detail, provided in
 shape files by WLU, as described in the documentation linked above:
 
 > *“It provides geospatial digital data compliant with the NHN Standard
@@ -355,6 +324,39 @@ An example of the features contained in these files is shown below
 ![Example hydrologic features from NHN (from
 QGIS)](img/nhn-features.png)
 
+### Merge Stream Vectors for Burning
+
+Use the WSC SDA IDs to group NHN features into the same polygons as
+defined for the regional groupings. In each NHN vector file
+(i.e. `nhn_rhn_07aa000_shp_en.zip`, see National Hydrographic Network
+section above) there is a layer containing the string `NLFLOW` which
+represents the continuous stream network. Similar to how the
+sub-subbasins were grouped above, use the same procedure to group the
+stream vectors and save them as separate files. These will be used in
+the FillBurn processing step for dem conditioning.
+
+> `python group_stream_vectors.py`
+
+GeoBC Digital Road Atlas
+------------------------
+
+Especially using higher resolution DEM, roads and bridges create issues
+when delineating basins. Use the provincial road atlas in combination
+with national hydrographic network streams to breach dems that don’t
+delineate properly due to man-made obstructions.
+
+Download the [Digital Road Atlas from the Gov’t of
+BC](https://www2.gov.bc.ca/gov/content/data/geographic-data-services/topographic-data/roads),
+or access the `.geojson` file using an ftp client (I used the
+open-source software [Filezilla](https://filezilla-project.org/))
+directly from the [ftp
+link](ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/DRA_Public/).
+
+This was tested with the Whiteboxtools
+[BurnStreamsAtRoads](https://www.whiteboxgeo.com/manual/wbt_book/available_tools/hydrological_analysis.html#BurnStreamsAtRoads)
+tool, without noticeable improvement in the results (could be an issue
+with my implementation).
+
 ### Global River Classification (OPTIONAL)
 
 https://ln.sync.com/dl/3d4952ac0/isuvquck-82fv4ca6-2vxh8nwm-fpeg9mra
@@ -375,8 +377,3 @@ Create folders and copy files using `scp` command:
 To automate citation formatting for the README document.
 
 > `pandoc -t markdown_strict -citeproc README-draft.md -o README.md --bibliography bib/bibliography.bib`
-
-Gleeson, Tom, Nils Moosdorf, Jens Hartmann, and LPH Van Beek. 2014. “A
-Glimpse Beneath Earth’s Surface: GLobal Hydrogeology Maps (Glhymps) of
-Permeability and Porosity.” *Geophysical Research Letters* 41 (11):
-3891–8.
