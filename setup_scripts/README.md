@@ -152,7 +152,7 @@ processed, trimmed and transformed to BC Albers 3005 projection, and
 grouped into 18 major basins and drainage regions described above
 (below-right).
 
-![Comparision of raw and processed DEM](../images/DEM_tile_trimmed.png)
+![Comparision of raw and processed DEM](../images/DEM_tiled_trimmed.png)
 
 Additional information on trimming ocean out of coastline for southeast
 Alaska, BC, and Washington state is included in the [Trim Coastline Dem
