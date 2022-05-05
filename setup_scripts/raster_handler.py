@@ -83,14 +83,14 @@ class RasterObject:
         hysets_data_path = os.path.join(BASE_DIR, 'source_data/HYSETS_data/')
         hysets_df = pd.read_csv(hysets_data_path + '/HYSETS_watershed_properties.txt', sep=';')
 
-        USGS_stn_locs_path = hysets_data_path + 'USGS_station_locations/'
-        usgs_df = gpd.read_file(USGS_stn_locs_path, layer='USGS_Streamgages-NHD_Locations')
+        # USGS_stn_locs_path = hysets_data_path + 'USGS_station_locations/'
+        # usgs_df = gpd.read_file(USGS_stn_locs_path, layer='USGS_Streamgages-NHD_Locations')
 
-        usgs_df = usgs_df.to_crs(self.crs)
-        usgs_df['Official_ID'] = usgs_df['SITE_NO']
+        # usgs_df = usgs_df.to_crs(self.crs)
+        # usgs_df['Official_ID'] = usgs_df['SITE_NO']
 
-        wsc_path = os.path.join(BASE_DIR, 'source_data/WSC_data/WSC_basin_polygons')
-        wsc_stns = os.listdir(wsc_path)
+        # wsc_path = os.path.join(BASE_DIR, 'source_data/WSC_data/WSC_basin_polygons')
+        # wsc_stns = os.listdir(wsc_path)
 
         hysets_df = pd.read_csv(os.path.join(BASE_DIR, 'source_data/HYSETS_data/HYSETS_watershed_properties.txt'), sep=';')
 
@@ -99,8 +99,8 @@ class RasterObject:
         hysets_df = hysets_df.to_crs(self.crs)
 
         self.hysets_df = hysets_df.copy()
-        self.wsc_stns = wsc_stns.copy()
-        self.usgs_df = usgs_df.copy()
+        # self.wsc_stns = wsc_stns.copy()
+        # self.usgs_df = usgs_df.copy()
 
         # load the SEAK basins
         # SEAK_file = 'USFS_Southeast_Alaska_Drainage_Basin__SEAKDB__Watersheds.geojson'
