@@ -8,7 +8,6 @@ DEM_source = 'USGS_3DEP'
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DEM_DIR = os.path.join(BASE_DIR, f'source_data/dem_data/{DEM_source}/')
-DEM_DIR = os.path.join(f'/media/danbot/Samsung_T5/geospatial_data/DEM_data/{DEM_source}/')
 
 # ensure the folders exist
 for p in [DEM_DIR]:
