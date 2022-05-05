@@ -1,8 +1,8 @@
 Data Acquisition and Preprocessing
 ==================================
 
-Set up Cloud Computing
-----------------------
+Set up Computing Environment
+----------------------------
 
 (Or local machine if it’s beefy enough, &gt;=128GB ram required!).
 **Assumes installation on Ubuntu Linux because it’s commonly offered in
@@ -16,8 +16,8 @@ for 128 GB RAM, 12 core processor.)
 > `sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable`  
 > `sudo apt update` `sudo apt upgrade`
 
-Install software utilities:
-&gt;`sudo apt-get install libgdal-dev gdal-bin libproj15 libproj-dev openmpi-bin libopenmpi-dev libboost-iostreams-dev parallel unzip dos2unix zip`
+Install dependencies:
+&gt;`sudo apt-get install gdal-bin libgdal-dev libproj15 libproj-dev openmpi-bin libopenmpi-dev libboost-iostreams-dev parallel unzip dos2unix zip`
 
 **Clone the repository (from the root directory)**
 
@@ -109,7 +109,7 @@ The complete basin regions are provided in the repository under
 `hysets_validation/processed_data/merged_basin_groups/final_polygons`.
 Given these pre-processed group polygons, create a clipped DEM and
 reproject to EPSG:3005. From `setup_scripts/`:  
-&gt;`python dem_basin_mapper.py`
+&gt;`python create_complete_region_DEMS.py`
 
 The remainder of this section is optional, and is provided for reference
 to document the process of breaking up the study region into complete
@@ -394,3 +394,17 @@ Create folders and copy files using `scp` command:
 To automate citation formatting for the README document.
 
 > `pandoc -t markdown_strict -citeproc README-draft.md -o README.md --bibliography bib/bibliography.bib`
+
+Remote Computing
+----------------
+
+If you need to log off the remote machine and keep a process running,
+you can start the process inside a `tmux` session and safely log off
+from the remote machine. I.e. the basin delineation script takes a very
+long time and you’ll likely encounter the `broken pipe` error which
+means your ssh session timed out.
+
+> `tmux` `python delineate_basins_pysheds.py` `ctrl+b` and then `d` to
+> leave the session
+
+When you want to check in again: &gt;`tmux attach`
