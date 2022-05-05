@@ -323,7 +323,7 @@ class RasterObject:
         interior_holes = [e for sublist in interior_holes for e in sublist]
         gap_list = []
         if len(interior_holes) > 0:
-            print(f'   ...{len(interior_holes)} holes found to be filled.')
+            # print(f'   ...{len(interior_holes)} holes found to be filled.')
             for hole in interior_holes:
                 gap_list.append(Polygon(hole))
 
@@ -332,7 +332,7 @@ class RasterObject:
             appended_set = data.append(data_gaps)
             appended_set.loc[:, 'group'] = 0
             merged_polygon = appended_set.dissolve(by='group', aggfunc='sum')
-            print(f'     merged geometry has {len(merged_polygon)} polygon (s)')
+            # print(f'     merged geometry has {len(merged_polygon)} polygon (s)')
             if len(merged_polygon) == 1:
                 return merged_polygon.geometry.values[0]
             else:
@@ -366,7 +366,7 @@ class RasterObject:
             gdf['geometry'] = self.fill_holes(gdf)
             
         if gdf is not None:
-            print(f'    ...basin polygon created.')
+            # print(f'    ...basin polygon created.')
             return gdf
         else: 
             return None
