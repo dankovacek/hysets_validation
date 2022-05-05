@@ -28,6 +28,9 @@ p.map(download_file, url_list)
 
 output_folder = os.path.join(BASE_DIR, 'processed_data/processed_dem')
 
+if not os.path.exists(output_folder):
+    os.makedirs(output_folder)
+
 # # this command builds the dem mosaic "virtual raster"
 vrt_command = f"gdalbuildvrt -resolution highest -a_srs epsg:4269 {output_folder}/USGS_3DEP_mosaic_4269.vrt {DEM_DIR}/*.tif"
 os.system(vrt_command)
