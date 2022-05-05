@@ -9,6 +9,7 @@ bib/
 
 source_data/
 processed_data/*
+!processed_data/station_to_region_mapper.json
 !processed_data/merged_basin_groups/
 processed_data/merged_basin_groups/
 !processed_data/merged_basin_groups/final_polygons
@@ -23,6 +24,7 @@ source_data/dem_data
 source_data/dem_data/dem_files/*.tif
 source_data/GLHMPS_data
 source_data/HYSETS_data
+!source_data/HYSETS_data/HYSETS_watershed_properties.txt
 source_data/NHN_data/*.zip
 source_data/NHN_feature_data
 source_data/PNW_Coastline
@@ -38,7 +40,6 @@ validate_hysets/ss/
 validate_hysets/test_burn
 
 setup_scripts/DEM_treatment_test/
-setup_scripts/img/
 setup_scripts/maps*/
 setup_scripts/performance_tests/
 setup_scripts/superseded/
