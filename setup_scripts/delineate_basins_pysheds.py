@@ -16,11 +16,13 @@ from raster_handler import RasterObject
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 group_codes = ['07G', '07O', '07U', '08A', '08B', '08C', '08D', '08E', '08F', '08G', '08H', '08N', '08O', '08P', '09A', 'ERockies', 'Fraser', 'Liard', 'Peace']
-group_codes = ['08P', '08O', '07G', '07U', '07O', '08G', '08H']
 
 version = '20220504'
 
 output_folder = os.path.join(BASE_DIR, f'processed_data/processed_basin_polygons_{version}/')
+
+if not os.path.exists(output_folder):
+    os.makedirs(output_folder)
 
 # remove groups that have already been completed
 processed_groups = list(set([e.split('_')[0] for e in os.listdir(output_folder)]))
