@@ -9,6 +9,8 @@ bib/
 
 source_data/
 processed_data/*
+!processed_data/merged_basin_groups/
+processed_data/merged_basin_groups/
 !processed_data/merged_basin_groups/final_polygons
 
 

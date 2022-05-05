@@ -14,14 +14,17 @@ for 128 GB RAM, 12 core processor.)
 **Install GDAL**
 
 > `sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable`  
-> `sudo apt-get update` `sudo apt-get upgrade`
+> `sudo apt update` `sudo apt upgrade`
 
 Install software utilities:
-&gt;`sudo apt-get install libgdal-dev gdal-bin libproj15 libproj-dev openmpi-bin libopenmpi-dev libboost-iostreams-dev libspatial-index-dev parallel unzip dos2unix zip`
+&gt;`sudo apt-get install libgdal-dev gdal-bin libproj15 libproj-dev openmpi-bin libopenmpi-dev libboost-iostreams-dev parallel unzip dos2unix zip`
 
 **Clone the repository (from the root directory)**
 
 > `git clone https://github.com/dankovacek/hysets_validation`
+
+Change directories to the `hysets_validation` folder:
+&gt;`cd hysets_validation`
 
 ### Install Python package manager (pip)
 
@@ -43,47 +46,11 @@ Install Python packages:
 Download Source Data
 --------------------
 
-### HYSETS
-
-The complete set of files associated with the HYSETS paper is ~14.6 GB
-and can be accessed [here](https://osf.io/rpc3w/). However, for
-validation we only need the results file, basin geometry, and station
-locations. The results file is included in the repo, and we can download
-the rest with the following script, found in `setup_scripts/`:
-
-> `cd setup_scripts` `python get_HYSETS_data.py`
-
-The basin polygon file (~15GB) could take 15-20 minutes on it’s own to
-download, so open a second terminal window and continue the setup
-process while this file is downloading.
-
-The process of delineating basins requires the specification of a pour
-point for each station. The accuracy of basin delineation is highly
-sensitive to the specification of pour points. Pour points are not
-specified for the polygons derived for this study, so these must be
-derived from WSC and USGS data. Pour points for WSC stations were
-recently published and these are downloaded in the next step. You may
-find that station locations do not yield accurate catchment delineations
-when using station locations.
-
-Next we will download basin polygons from the WSC. These files contain
-both station locations and pour points which produce much better results
-when validating the catchment polygon.
-
-### WSC Hydrometric Station Catchment Polygons and Metadata
-
-An updated set of basin polygons from WSC, published in December 2021,
-can be downloaded and processed by the following script located in
-`setup_scripts`. You can customize the region of interest by modifying
-the list of basin prefixes, i.e. BC is covered by 07, 08, 09, and 10.
-
-> `python get_WSC_data.py`
-
-The `source_data` folder contains the WSC station metadata file of
-active and historic hydrometric stations `WSC_Stations_2020.csv`.
-
-Next we choose one or both DEM sources to download tiles and construct a
-DEM mosaic file covering the study area.
+To replicate the HYSETS study with the same DEM source, follow the
+instructions for EarthEnv DEM90 below. To use a higher resolution DEM
+from 3DEP, skip to the next section. Note that the higher resolution
+data is far more memory intensive, &gt; 32GB ram is required to process
+the DEM.
 
 ### EarthEnv DEM90
 
@@ -124,7 +91,7 @@ generate a list of DEM files corresponding to the layers selected:
 3DEP](../images/topo_dl.png)
 
 Download the tiles and merge them into a virtual raster
-(`BC_DEM_mosaic_4326.vrt`) with gdal using the following script in
+(`USGS_3DEP_mosaic_4326.vrt`) with gdal using the following script in
 `setup_scripts`:
 
 > `python get_3DEP_DEM.py`
@@ -137,6 +104,16 @@ Setting 4326 appears to produce properly aligned geometry. The resulting
 ![DEM Mosaic of BC from 3DEP](img/BC_dem_raw.png)
 
 ### National Hydrographic Network (NHN)
+
+The complete basin regions are provided in the repository under
+`hysets_validation/processed_data/merged_basin_groups/final_polygons`.
+Given these pre-processed group polygons, create a clipped DEM and
+reproject to EPSG:3005. From `setup_scripts/`:  
+&gt;`python dem_basin_mapper.py`
+
+The remainder of this section is optional, and is provided for reference
+to document the process of breaking up the study region into complete
+areas (i.e. polygons that have only outflow, no inflow).
 
 ![Regions of the National Hydrographic
 Network](img/nhn_regions_full.png)
@@ -169,14 +146,6 @@ province. See the images below for original and processed data polygons:
 
 ![Original WSC sub-sub-drainage regions](img/wsc-ssda.png) ![Grouped
 Major Drainage Basins after processing](img/wsc-ssda-processed.png)
-
-Once the major groups are formed, the file
-`/processed_data/merged_basin_groups/BC_basin_region_groups_EPSG4326.geojson`
-should have been created. For each of the regional basins, create a
-clipped DEM and reproject to EPSG:3005. From `setup_scripts/`:  
-&gt;`python dem_basin_mapper.py`
-
-Note that you need to specify which DEM source you’re using.
 
 The DEM processing will transform the raw DEM mosaic (below-left) to the
 processed, trimmed and transformed to BC Albers 3005 projection, and
@@ -223,6 +192,48 @@ the North American Land Change Monitoring System:
 > `wget http://www.cec.org/wp-content/uploads/wpallimport/files/Atlas/Files/2010nalcms30m/north_america_2010.zip > north_america_2010.zip`  
 > `unzip north_america_2020.zip -d .`
 
+### HYSETS
+
+The complete set of files associated with the HYSETS paper is ~14.6 GB
+and can be accessed [here](https://osf.io/rpc3w/). However, for
+validation we only need the results file, basin geometry, and station
+locations. The results file is included in the repo, and we can download
+the rest with the following script, found in `setup_scripts/`:
+
+> `cd setup_scripts` `python get_HYSETS_data.py`
+
+The basin polygon file (~15GB) could take 15-20 minutes on it’s own to
+download, so open a second terminal window and continue the setup
+process while this file is downloading.
+
+The process of delineating basins requires the specification of a pour
+point for each station. The accuracy of basin delineation is highly
+sensitive to the specification of pour points. Pour points are not
+specified for the polygons derived for this study, so these must be
+derived from WSC and USGS data. Pour points for WSC stations were
+recently published and these are downloaded in the next step. You may
+find that station locations do not yield accurate catchment delineations
+when using station locations.
+
+Next we will download basin polygons from the WSC. These files contain
+both station locations and pour points which produce much better results
+when validating the catchment polygon.
+
+### WSC Hydrometric Station Catchment Polygons and Metadata
+
+An updated set of basin polygons from WSC, published in December 2021,
+can be downloaded and processed by the following script located in
+`setup_scripts`. You can customize the region of interest by modifying
+the list of basin prefixes, i.e. BC is covered by 07, 08, 09, and 10.
+
+> `python get_WSC_data.py`
+
+The `source_data` folder contains the WSC station metadata file of
+active and historic hydrometric stations `WSC_Stations_2020.csv`.
+
+Next we choose one or both DEM sources to download tiles and construct a
+DEM mosaic file covering the study area.
+
 Basin Delineation and Attribute Validation
 ------------------------------------------
 
@@ -248,6 +259,13 @@ executed with the script `setup_scripts/delineate_basins.py`
 
 Additional Notes
 ----------------
+
+### Broken Pipeline
+
+If you are having “broken pipe” errors using a remote server add
+`ServerAliveInterval 360` to `ssh_config`:
+
+> `sudo nano /etc/ssh/ssh_config`
 
 ### Trim Coastline DEM
 
