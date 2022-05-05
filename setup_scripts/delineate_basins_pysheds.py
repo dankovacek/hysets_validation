@@ -27,8 +27,11 @@ if not os.path.exists(output_folder):
 # remove groups that have already been completed
 processed_groups = list(set([e.split('_')[0] for e in os.listdir(output_folder)]))
 group_codes = [g for g in group_codes if g not in processed_groups]
+n_groups = len(group_codes)
 
+i = 1
 for group_code in group_codes:
+    print(f'Starting processing on {group_code}.  {i}/{n_groups}')
     raster = RasterObject(group_code=group_code, compute_loc='remote')
 
     n_pixels = raster.dem.shape[0] * raster.dem.shape[1] 
@@ -37,7 +40,7 @@ for group_code in group_codes:
     raster.preprocess_dem()
     t1 = time.time()
     print('')
-    print(f'   ...{n_pixels:.1f} pixel DEM loaded and preprocessed in {t1-t0:.1f}s')
+    print(f'   ...{n_pixels:.1e} pixel DEM loaded and preprocessed in {t1-t0:.1f}s')
     
     # list of stations found in the give region
     stations = raster.stations
@@ -72,6 +75,7 @@ for group_code in group_codes:
     ppt_path = output_folder + f'{group_code}_ppts.geojson'
     basin_gdf.to_file(ppt_path)
     print(f'  saved {out_path}')
+    i += 1
 
 
 print('')
