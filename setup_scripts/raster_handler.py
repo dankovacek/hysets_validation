@@ -67,8 +67,9 @@ class RasterObject:
         # map stations to the regional group name
         stn_mapper_path = os.path.join(BASE_DIR, 'processed_data/')
         mapper_dict_file = 'station_to_region_mapper.json'
-
-        if not os.path.exists(os.path.join(stn_mapper_path, mapper_dict_file)):
+        mapper_path = os.path.join(stn_mapper_path, mapper_dict_file)
+        if not os.path.exists(mapper_path):
+            print(mapper_path)
             raise Exception; '  Mapper file not found.  You need to first run process_complete_basin_groups.py'
 
         # with open(stn_mapper_path + mapper_dict_file, 'rb') as handle:
