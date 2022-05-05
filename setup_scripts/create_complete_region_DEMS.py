@@ -25,11 +25,11 @@ t0 = time.time()
 
 # specify the DEM source
 # either 'EarthEnv_DEM90' or 'USGS_3DEP'
-DEM_source = 'EarthEnv_DEM90'
+DEM_source = 'EENV_DEM90'
 DEM_source = 'USGS_3DEP'
 
 epsg_code = 4326
-vrt_file = 'EENV_DEM_mosaic_4326.vrt'
+vrt_file = f'{DEM_source}_mosaic_4326.vrt'
 if DEM_source == 'USGS_3DEP':
     epsg_code = 4269
     vrt_file = f'{DEM_source}_mosaic_{epsg_code}.vrt'
@@ -38,17 +38,6 @@ if DEM_source == 'USGS_3DEP':
 dem_mosaic_file = os.path.join(processed_dem_dir, vrt_file)
 
 bc_region_final_polygons_folder = DATA_DIR + 'merged_basin_groups/final_polygons/'
-
-# bc_region_final_polygons_folder = '/home/danbot/Documents/code/hysets_validation/setup_scripts/DEM_treatment_test/'
-
-# coastline_path = '/home/danbot/Documents/code/hysets_validation/source_data/'
-# bc_coast = gpd.read_file(coastline_path + 'BC_Coastline/FWA_COASTLINES_SP.geojson')
-# create boolean variable if the linestring is a closed loop or not
-# bc_coast['is_ring'] = bc_coast.geometry.is_ring
-# coast_groups = [
-#     '08A', '08B', '08C', '08D',
-#     '08F', '08G', '08H', '08O', 
-#     ]
 
 save_path = DATA_DIR + f'processed_dem/{DEM_source}/'
 save_path = f'/media/danbot/Samsung_T5/geospatial_data/DEM_data/processed_dem/{DEM_source}/'
@@ -112,7 +101,7 @@ all_codes = [e.split('_')[0] for e in all_masks]
 # all_codes = [e for e in all_codes if e in ['07U', 'ERockies', '08N']]
 
 i = 0
-for code in ['07U']:#all_codes:
+for code in all_codes:
 
     file = [e for e in all_masks if code in e][0]
     
