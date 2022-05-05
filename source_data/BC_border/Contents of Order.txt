@@ -1,0 +1,15 @@
+------------------
+Order Details
+-----------------
+Order ID: 2171473
+Date: 20211105
+
+
+----------------------
+Feature Types
+-----------------------
+ - BC Provincial Boundaries Lines 1:2,000,000 (Digital Baseline Map in subdirectory BC_PROV_BOUNDARIES_LINES_500M
+
+----------------------------
+Packaged Products
+----------------------------
