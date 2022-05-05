@@ -402,7 +402,8 @@ If you need to log off the remote machine and keep a process running,
 you can start the process inside a `tmux` session and safely log off
 from the remote machine. I.e. the basin delineation script takes a very
 long time and you’ll likely encounter the `broken pipe` error which
-means your ssh session timed out.
+means your ssh session timed out. More details in [this
+post](https://askubuntu.com/questions/8653/how-to-keep-processes-running-after-ending-ssh-session).
 
 > `tmux` `python delineate_basins_pysheds.py` `ctrl+b` and then `d` to
 > leave the session
