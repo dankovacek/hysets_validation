@@ -29,7 +29,7 @@ processed_groups = list(set([e.split('_')[0] for e in os.listdir(output_folder)]
 group_codes = [g for g in group_codes if g not in processed_groups]
 
 for group_code in group_codes:
-    raster = RasterObject(group_code=group_code)
+    raster = RasterObject(group_code=group_code, compute_loc='remote')
 
     n_pixels = raster.dem.shape[0] * raster.dem.shape[1] 
 
