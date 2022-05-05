@@ -82,7 +82,7 @@ class RasterObject:
 
     def retrieve_station_data(self):
         hysets_data_path = os.path.join(BASE_DIR, 'source_data/HYSETS_data/')
-        hysets_df = pd.read_csv(hysets_data_path + '/HYSETS_watershed_properties.txt', sep=';')
+        hysets_df = pd.read_csv(hysets_data_path + 'HYSETS_watershed_properties.txt', sep=';')
 
         # USGS_stn_locs_path = hysets_data_path + 'USGS_station_locations/'
         # usgs_df = gpd.read_file(USGS_stn_locs_path, layer='USGS_Streamgages-NHD_Locations')
