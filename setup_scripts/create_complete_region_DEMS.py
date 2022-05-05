@@ -40,7 +40,7 @@ dem_mosaic_file = os.path.join(processed_dem_dir, vrt_file)
 bc_region_final_polygons_folder = DATA_DIR + 'merged_basin_groups/final_polygons/'
 
 save_path = DATA_DIR + f'processed_dem/{DEM_source}/'
-save_path = f'/media/danbot/Samsung_T5/geospatial_data/DEM_data/processed_dem/{DEM_source}/'
+# save_path = f'/media/danbot/Samsung_T5/geospatial_data/DEM_data/processed_dem/{DEM_source}/'
 
 
 if not os.path.exists(save_path):
