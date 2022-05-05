@@ -19,7 +19,7 @@ DATA_DIR = os.path.join(BASE_DIR, 'processed_data/')
 
 mask_dir = DATA_DIR + f'merged_basin_groups/final_polygons/'
 
-dem_dir = os.path.join(BASE_DIR, f'source_data/dem_data/')
+processed_dem_dir = os.path.join(BASE_DIR, 'processed_data/processed_dem')
 
 t0 = time.time()
 
@@ -35,7 +35,7 @@ if DEM_source == 'USGS_3DEP':
     vrt_file = f'{DEM_source}_mosaic_{epsg_code}.vrt'
     # dem_dir = '/media/danbot/Samsung_T5/geospatial_data/DEM_data/'
 
-dem_mosaic_file = os.path.join(dem_dir, vrt_file)
+dem_mosaic_file = os.path.join(processed_dem_dir, vrt_file)
 
 bc_region_final_polygons_folder = DATA_DIR + 'merged_basin_groups/final_polygons/'
 
@@ -51,10 +51,12 @@ bc_region_final_polygons_folder = DATA_DIR + 'merged_basin_groups/final_polygons
 #     ]
 
 save_path = DATA_DIR + f'processed_dem/{DEM_source}/'
-# save_path = f'/media/danbot/Samsung_T5/geospatial_data/DEM_data/processed_dem/{DEM_source}'
+save_path = f'/media/danbot/Samsung_T5/geospatial_data/DEM_data/processed_dem/{DEM_source}/'
+
 
 if not os.path.exists(save_path):
     os.makedirs(save_path)
+
 
 def get_crs_and_resolution(fname):
     raster = rxr.open_rasterio(fname)
@@ -64,6 +66,7 @@ def get_crs_and_resolution(fname):
 
 
 dem_crs, (w_res, h_res) = get_crs_and_resolution(dem_mosaic_file)
+
 
 def check_mask_validity(mask_path):
     # m = '08NM071_original.geojson'
@@ -109,7 +112,7 @@ all_codes = [e.split('_')[0] for e in all_masks]
 # all_codes = [e for e in all_codes if e in ['07U', 'ERockies', '08N']]
 
 i = 0
-for code in all_codes:
+for code in ['07U']:#all_codes:
 
     file = [e for e in all_masks if code in e][0]
     

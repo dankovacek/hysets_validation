@@ -18,82 +18,92 @@ import rasterio as rio
 
 import richdem as rd
 
-from whitebox.whitebox_tools import WhiteboxTools
+# from whitebox.whitebox_tools import WhiteboxTools
 
 
 import logging
 logging.getLogger('richdem').setLevel(logging.ERROR)
 
-wbt = WhiteboxTools()
+# wbt = WhiteboxTools()
 
-cwd = os.getcwd()
-wbt.verbose = False
-wbt.set_working_dir(cwd)
+# cwd = os.getcwd()
+# wbt.verbose = False
+# wbt.set_working_dir(cwd)
 
 import warnings
 warnings.filterwarnings('ignore')
 
 t0 = time.time()
-print('Starting HSETS validation script.  Loading resources...')
+print('Starting HYSETS validation script.  Loading resources...')
 
-data_dir = '/media/danbot/Samsung_T5/geospatial_data/'
-hysets_dir = os.path.join(data_dir, 'HYSETS_data/')
-hydat_dir = os.path.join(data_dir, 'hydat_db/')
-dem_dir = os.path.join(data_dir, 'DEM_data/')
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR = os.path.join(BASE_DIR, 'source_data/')
+
+ext_data_dir = '/media/danbot/Samsung_T5/geospatial_data/'
+hysets_dir = os.path.join(DATA_DIR, 'HYSETS_data/')
+hysets_dir = os.path.join(ext_data_dir, 'HYSETS_data')
+
+hydat_dir = os.path.join(DATA_DIR, 'hydat_db/')
+dem_dir = os.path.join(DATA_DIR, 'dem_data/')
+
 processed_dem_dir = os.path.join(dem_dir, 'processed_dem/')
+
+processed_data_dir = os.path.join(BASE_DIR, 'processed_data/')
 # dem_fpath_1km = os.path.join(dem_dir, 'watershed_group_tiles_merged_1km/')
 # dem_fpath_10km = os.path.join(dem_dir, 'watershed_group_tiles_merged_10km/')
 
+validation_results_path = os.path.join(BASE_DIR, 'validate_hysets')
 # root_path = '/home/danbot/Documents/code/thesis_code/validate_hysets/'
 # updated basins from December 2021 (dave Hutchinson) have path formats like: 
 # WSC_data/2021-12-basins/all/07AA001/basin/07AA001_DrainageBasin_BassinDeDrainage.shp
-wsc_basin_dir = data_dir + 'WSC_data/2021-12-basins/all/'
+# wsc_basin_dir = data_dir + 'WSC_data/2021-12-basins/all/'
 
 # compile the list of stations with a basin polygon
-wsc_stations = os.listdir(wsc_basin_dir)
+# wsc_stations = os.listdir(wsc_basin_dir)
 
 # other data sources
-glhymps_fpath = data_dir + 'GLHYMPS/GLHYMPS.gdb'
+glhymps_fpath = DATA_DIR + 'GLHYMPS_data/GLHYMPS.gdb'
 
 # snow and land use / land cover
-nalcms_fpath = data_dir + 'NALCMS_NA_2010/NA_NALCMS_2010_v2_land_cover_30m/' + 'NA_NALCMS_2010_v2_land_cover_30m.tif'
+nalcms_fpath = ext_data_dir + 'NALCMS_NA_2010/NA_NALCMS_2010_v2_land_cover_30m/' + 'NA_NALCMS_2010_v2_land_cover_30m.tif'
 
-# where to save results of validation
-processed_data_output_path = '/media/danbot/T7 Touch/thesis_data/processed_stations/'
-# processed_polygons_out_path = '/home/danbot/Documents/code/hysets_validation/processed_data/derived_basins/'
-processed_polygon_path = '/media/danbot/T7 Touch/thesis_data/processed_stations/'
+# # where to save results of validation
+# processed_data_output_path = '/media/danbot/T7 Touch/thesis_data/processed_stations/'
+# # processed_polygons_out_path = '/home/danbot/Documents/code/hysets_validation/processed_data/derived_basins/'
+# processed_polygon_path = '/media/danbot/T7 Touch/thesis_data/processed_stations/'
 
-wsc_df = pd.read_csv(hydat_dir + 'hydrometric_StationList_2021-07.csv')
-wsc_df.columns = [e.strip() for e in wsc_df.columns]
+# wsc_df = pd.read_csv(hydat_dir + 'hydrometric_StationList_2021-07.csv')
+# wsc_df.columns = [e.strip() for e in wsc_df.columns]
 
-wsc_bc = wsc_df[wsc_df['Prov/Terr'] == 'BC']
-wsc_bc.columns = [e.strip() for e in wsc_bc.columns]
-wsc_bc.columns
+# wsc_bc = wsc_df[wsc_df['Prov/Terr'] == 'BC']
+# wsc_bc.columns = [e.strip() for e in wsc_bc.columns]
+# wsc_bc.columns
 
-t_wsc = time.time()
-print(f"    ..WSC data loaded in {t_wsc - t0:.1f}")
+# t_wsc = time.time()
+# print(f"    ..WSC data loaded in {t_wsc - t0:.1f}")
 
 # file containing derived watershed properties used in hysets
-hysets_props_fname = 'HYSETS_watershed_properties.txt'
+hysets_props_fname = '/HYSETS_watershed_properties.txt'
+
 # import the set of derived watershed properties from hysets
 hysets_props = pd.read_csv(hysets_dir + hysets_props_fname, delimiter=';')
 
 # create a dataframe of station locations from hysets
-hy_geom = [shapely.geometry.Point(e['Centroid_Lon_deg_E'], e['Centroid_Lat_deg_N']) for _, e in hysets_props.iterrows()]
-hysets_gdf = gpd.GeoDataFrame(hysets_props, 
-                              geometry=hy_geom)
+# hy_geom = [shapely.geometry.Point(e['Centroid_Lon_deg_E'], e['Centroid_Lat_deg_N']) for _, e in hysets_props.iterrows()]
+# hysets_gdf = gpd.GeoDataFrame(hysets_props, 
+                            #   geometry=hy_geom)
 # convert to projected CRS NOTE--USE BC ALBERS: EPSG 3005
-hysets_gdf = hysets_gdf.set_crs('EPSG:4326')
-# hysets_gdf = hysets_gdf.to_crs('EPSG:3857')
-hysets_gdf = hysets_gdf.to_crs('EPSG:3005')
+# hysets_gdf = hysets_gdf.set_crs('EPSG:4326')
+# # hysets_gdf = hysets_gdf.to_crs('EPSG:3857')
+# hysets_gdf = hysets_gdf.to_crs('EPSG:3005')
 
-hysets_basins = gpd.read_file(hysets_dir + 'HYSETS_watershed_boundaries.zip')
+hysets_basins = gpd.read_file(hysets_dir + '/HYSETS_watershed_boundaries.zip')
 hysets_basins = hysets_basins.set_crs('EPSG:4326')
 hysets_basins = hysets_basins.to_crs('EPSG:3005')
 hysets_basins.head()
 
 t_hs = time.time()
-print(f"    ....HYSETS data loaded in {t_hs - t_wsc:.1f}")
+print(f"    ....HYSETS data loaded in {t_hs - t0:.1f}")
 
 def retrieve_raster(fpath):
     rds = rxr.open_rasterio(fpath, masked=True, mask_and_scale=True)
@@ -107,26 +117,28 @@ nalcms_raster, nalcms_crs, nalcms_affine = retrieve_raster(nalcms_fpath)
 t_nal = time.time()
 print(f"    ......NALCMS data loaded in {t_nal - t_hs:.1f}")
 
-data_folder = processed_data_output_path
-with open('20220211_code_dict.pickle', 'rb') as handle:
+# data_folder = processed_data_output_path
+region_mapper_fpath = os.path.join(processed_data_dir, 'station_to_region_mapper.pickle')
+with open(region_mapper_fpath, 'rb') as handle:
     code_dict = pickle.load(handle)
 
 print('    Resources loaded.')
 
-# bad stations
-# 08DA010, 08KC003
-# print(code_dict['08KC003'])
-# print(adfasdf)
 
 # find stations in common between HYSETS and WSC within the study region
-all_stations = list(code_dict.keys())
-print(f'There are {len(all_stations)} in HYSETS falling within the study region')
-common_stations = [stn for stn in all_stations if stn in wsc_stations]
-print(f'   and {len(common_stations)} of these are also in common with the WSC polygon set.')
+processed_polygon_fpath = os.path.join(processed_data_dir, 'processed_basin_polygons/')
+all_station_polygons = os.listdir(processed_polygon_fpath)
+all_stations = list(set([e.split('_')[0] for e in all_station_polygons]))
+print(f'    {len(all_stations)} stations to process.')
 
+wsc_path = os.path.join(BASE_DIR, 'source_data/WSC_data/WSC_basin_polygons')
+wsc_stns = os.listdir(wsc_path)
+common_stations = [e for e in all_stations if e in wsc_stns]
+
+print(f'    of which {len(common_stations)} are also in the WSC basin set.')
 
 def calculate_gravelius_and_perim(polygon):
-    # assert polygon.crs == 'EPSG:3005'
+    
     p = polygon.to_crs('EPSG:3005')
     perimeter = p.geometry.length.values[0]
     area = p.geometry.area.values[0] 
@@ -135,8 +147,7 @@ def calculate_gravelius_and_perim(polygon):
     else:
         perimeter_equivalent_circle = np.sqrt(4 * np.pi * area)
         gravelius = perimeter / perimeter_equivalent_circle
-    # print('gravelius, perimeter:')
-    # print(gravelius, perimeter)
+
     return gravelius, perimeter
 
 
@@ -165,8 +176,6 @@ def process_basin_elevation(dem_raster):
     # evaluate masked raster data
     vals = dem_raster.data.flatten()    
     mean_val, min_val, max_val = np.nanmean(vals), np.nanmin(vals), np.nanmax(vals)
-    # print('mean, min, max values')
-    # print(mean_val, min_val, max_val)
     return mean_val, min_val, max_val
 
 
@@ -265,7 +274,7 @@ def calculate_slope_and_aspect(clipped_raster):
 def retrieve_basin_polygon(basin_polygon_source, station, resolution):
     if basin_polygon_source == 'manual':
         # basin_polygon_path = processed_polygons_out_path + 'pysheds/' + f'{station}_PYSHEDS_basin_derived_{resolution}.geojson'
-        basin_polygon_path = processed_polygon_path + f'{station}_PYSHEDS_basin_derived_{resolution}.geojson'
+        basin_polygon_path = processed_polygon_fpath + f'{station}_PYSHEDS_basin_derived_{resolution}.geojson'
         if not os.path.exists(basin_polygon_path):
             raise Exception; f'{basin_polygon_path} does not exist.'
         else:
@@ -310,8 +319,7 @@ def process_basin_characteristics(grp_code, station, dem_raster, basin_polygon):
     data.update(lulc_data)
     return data
     
-root_path = '/home/danbot/Documents/code/hysets_validation/validate_hysets/results/'
-        
+       
 
 def write_error(stn, d, msg):
     if stn in list(d.keys()):
@@ -323,17 +331,19 @@ def write_error(stn, d, msg):
 # for region in code
 region_codes = sorted(list(set(code_dict.values())))
 
+DEM_source = 'EarthEnv_DEM90'
+
 errors = {}
 t_start = time.time()
-for res in ['res8', 'res4', 'res2', 'res1']:#, 'med', 'hi']:
-    for polygon_source in ['manual', 'hysets']:
+for res in ['res1']:#, 'med', 'hi']:
+    for polygon_source in ['manual']: #['manual', '']
         all_dfs = []
         for region in region_codes:
             
             stations = sorted([s for s in list(set(code_dict.keys())) if code_dict[s] == region])
 
             # load region code-specific resources once
-            dem_path = processed_dem_dir + f'{region}_DEM_3005_{res}.tif'
+            dem_path = processed_dem_dir + f'{region}_{DEM_source}_3005_{res}.tif'
             dem_raster, raster_crs, affine = retrieve_raster(dem_path)
 
             for station in stations:
@@ -364,7 +374,8 @@ for res in ['res8', 'res4', 'res2', 'res1']:#, 'med', 'hi']:
         if len(all_dfs) > 0:
             results = pd.concat(all_dfs, axis=0, ignore_index=True)
             results = results.sort_values(by='OfficialID')
-            results.to_csv(root_path + f'{polygon_source}_basin_characteristics_{res}.csv')
+            out_path = os.path.join(validation_results_path, f'results/{polygon_source}_{DEM_source}_basin_characteristics_{res}.csv')
+            results.to_csv(out_path)
         else:
             print('    No results returned.  Something real bad happened.')
         print(results.head())
@@ -372,7 +383,7 @@ for res in ['res8', 'res4', 'res2', 'res1']:#, 'med', 'hi']:
         t_resolution = t_r - t0
         print(f'    ...completed {res} resolution cycle in {t_resolution:.0f}s')
         if len(list(errors.keys())) > 0:
-            error_path = root_path + f'{polygon_source}_errors_{res}res.pickle'
+            error_path = os.path.join(validation_results_path, f'results/{polygon_source}_errors_{res}res.pickle')
             with open(error_path, 'wb') as handle:
                 pickle.dump(errors, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
