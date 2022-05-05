@@ -68,7 +68,7 @@ Links to invidivual DEM tiles look like the following:
 The resulting .vrt mosaic should look like below:
 
 ![DEM Mosaic of BC and administrative boundary
-regions](../images/EarthEnv90.png)
+regions](img/EarthEnv90.png)
 
 ### USGS 3DEP DEM
 
